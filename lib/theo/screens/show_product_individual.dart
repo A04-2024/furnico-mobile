@@ -18,7 +18,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json/${widget.id}/');
 
-    // Melakukan decode response menjadi bentuk json
+    // Melakukan decode  menjadi bentuk json
     var data = response;
 
     // Melakukan konversi data json menjadi object ProductEntry
