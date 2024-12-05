@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
-import '../models/product_entry.dart'; // Ganti dengan package CookieRequest yang Anda gunakan.
+import '../models/product_entry.dart';
 
 class ProductSearchPage extends StatefulWidget {
   const ProductSearchPage({Key? key}) : super(key: key);

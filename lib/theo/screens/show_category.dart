@@ -9,6 +9,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product_entry.dart';
+import 'add_product.dart';
 
 class CategoryPage extends StatefulWidget {
   final String categoryId;
@@ -137,7 +138,7 @@ class _CategoryPageState extends State<CategoryPage> {
                                       Navigator.push(
                                         context,
                                         MaterialPageRoute(
-                                            builder: (context) => const DummyPage()),
+                                            builder: (context) => const ProductEntryFormPage()),
                                       );
                                     },
                                     child: const Text('Tambah Produk Baru'),

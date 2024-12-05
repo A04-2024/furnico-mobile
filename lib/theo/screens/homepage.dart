@@ -4,6 +4,8 @@ import 'package:furnico/theo/screens/dummy.dart';
 import 'package:furnico/theo/screens/search_product.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
 
+import 'add_product.dart';
+
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
 
@@ -125,7 +127,7 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const DummyPage()),
+                              builder: (context) => const ProductEntryFormPage()),
                         );
                       },
                       child: const Text('Tambah Produk Baru'),
