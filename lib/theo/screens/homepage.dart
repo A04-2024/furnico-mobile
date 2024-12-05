@@ -1,6 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:furnico/theo/screens/dummy.dart';
+import 'package:furnico/theo/screens/search_product.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -206,7 +207,7 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildFooterIcon(context, Icons.home, 'Home', DummyPage()),
-            _buildFooterIcon(context, Icons.search, 'Search', DummyPage()),
+            _buildFooterIcon(context, Icons.search, 'Search', ProductSearchPage()),
             _buildFooterIcon(context, Icons.favorite, 'Wishlist', DummyPage()),
             _buildFooterIcon(context, Icons.article, 'Article', DummyPage()),
             _buildFooterIcon(context, Icons.person, 'Profile', DummyPage()),
