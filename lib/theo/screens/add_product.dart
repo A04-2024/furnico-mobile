@@ -114,6 +114,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Nama Produk",
                     labelText: "Nama Produk",
+                    icon: Icon(Icons.abc),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -142,6 +143,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Penjelasan singkat produk",
                     labelText: "Subtitel produk",
+                    icon: Icon(Icons.subtitles),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -170,6 +172,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Tautan Gambar Produk",
                     labelText: "Tautan Gambar Produk",
+                    icon: Icon(Icons.image),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -198,6 +201,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Pilih Kategori Produk",
                     labelText: "Kategori Produk",
+                    icon: Icon(Icons.category),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -230,6 +234,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Harga Produk",
                     labelText: "Harga Produk",
+                    icon: Icon(Icons.money),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -260,6 +265,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Terjual Minggu Ini",
                     labelText: "Terjual Minggu Ini",
+                    icon: Icon(Icons.shopping_bag),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -290,6 +296,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Jumlah Produk Terjual",
                     labelText: "Jumlah Produk Terjual",
+                    icon: Icon(Icons.shopping_cart),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -321,6 +328,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Penjelasan detail produk",
                     labelText: "Deskripsi Produk",
+                    icon: Icon(Icons.description),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -347,6 +355,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Penjelasan kelebihan produk",
                     labelText: "Kelebihan Produk",
+                    icon: Icon(Icons.check_circle),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -374,6 +383,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Bahan Produk",
                     labelText: "Bahan Produk",
+                    icon: Icon(Icons.star_border_outlined),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -402,6 +412,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Lebar produk",
                     labelText: "Lebar produk",
+                    icon: Icon(Icons.numbers),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -432,6 +443,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Tinggi produk",
                     labelText: "Tinggi produk",
+                    icon: Icon(Icons.numbers),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -462,6 +474,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Panjang produk",
                     labelText: "Panjang produk",
+                    icon: Icon(Icons.numbers),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -493,6 +506,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Nama Toko",
                     labelText: "Nama Toko",
+                    icon: Icon(Icons.store),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),
@@ -520,6 +534,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   decoration: InputDecoration(
                     hintText: "Alamat Toko",
                     labelText: "Alamat Toko",
+                    icon: Icon(Icons.storefront_rounded),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10.0),
                     ),

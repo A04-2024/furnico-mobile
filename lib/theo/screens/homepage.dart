@@ -1,7 +1,7 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:furnico/theo/screens/dummy.dart';
-import 'package:furnico/theo/screens/search_product.dart';
+import 'package:furnico/theo/screens/show_productall.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
 
 import 'add_category.dart';
@@ -161,7 +161,7 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ProductSearchPage()),
+                              builder: (context) => const ShowProductAll()),
                         );
                       },
                       child: const Text('Lihat semua produk'),
@@ -227,7 +227,7 @@ class MyHomePage extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
             _buildFooterIcon(context, Icons.home, 'Home', MyHomePage()),
-            _buildFooterIcon(context, Icons.search, 'Search', ProductSearchPage()),
+            _buildFooterIcon(context, Icons.search, 'Search', ShowProductAll()),
             _buildFooterIcon(context, Icons.favorite, 'Wishlist', DummyPage()),
             _buildFooterIcon(context, Icons.article, 'Article', DummyPage()),
             _buildFooterIcon(context, Icons.person, 'Profile', DummyPage()),

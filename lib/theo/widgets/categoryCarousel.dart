@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 import '../models/category.dart';
 import '../screens/homepage.dart';
-import '../screens/search_product.dart';
+import '../screens/show_productall.dart';
 
 class CategoryCarousel extends StatefulWidget {
   const CategoryCarousel({Key? key}) : super(key: key);
@@ -199,7 +199,7 @@ class _Homepage extends State<CategoryCarousel> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const ProductSearchPage()),
+                              builder: (context) => const ShowProductAll()),
                         );
                       },
                       child: Text(categoryName),

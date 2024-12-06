@@ -6,6 +6,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:provider/provider.dart';
 
+import 'edit_product.dart';
 import 'homepage.dart';
 
 class ProductDetailPage extends StatefulWidget {
@@ -190,7 +191,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) =>
-                        DummyPage()),
+                        ProductEditFormPage(id: "${snapshot.data![0].pk}",)),
                   );
                 },
                 child: const Text('Edit Produk'),

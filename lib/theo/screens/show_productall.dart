@@ -4,14 +4,14 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 import '../models/product_entry.dart';
 
-class ProductSearchPage extends StatefulWidget {
-  const ProductSearchPage({Key? key}) : super(key: key);
+class ShowProductAll extends StatefulWidget {
+  const ShowProductAll({Key? key}) : super(key: key);
 
   @override
-  State<ProductSearchPage> createState() => _ProductSearchPageState();
+  State<ShowProductAll> createState() => _ProductEntryPageState();
 }
 
-class _ProductSearchPageState extends State<ProductSearchPage> {
+class _ProductEntryPageState extends State<ShowProductAll> {
   late CookieRequest _request; // Inisialisasi untuk CookieRequest
   List<ProductEntry> allProducts = [];
   List<ProductEntry> filteredProducts = [];
