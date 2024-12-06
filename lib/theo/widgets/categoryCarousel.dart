@@ -1,12 +1,14 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:furnico/theo/screens/show_category.dart';
-import 'package:furnico/theo/screens/show_productall.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../models/category.dart';
+import '../screens/homepage.dart';
 import '../screens/search_product.dart';
 
 class CategoryCarousel extends StatefulWidget {
@@ -17,6 +19,8 @@ class CategoryCarousel extends StatefulWidget {
 }
 
 class _Homepage extends State<CategoryCarousel> {
+  late CookieRequest _request = CookieRequest();
+
   Future<List<Category>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json_cat/');
 
@@ -44,7 +48,29 @@ class _Homepage extends State<CategoryCarousel> {
         } else if (snapshot.hasError) {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No categories available.'));
+          return const Padding(
+            padding: EdgeInsets.only(top: 16.0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Belum ada produk di Furnico!',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const Text(
+                    'Tunggu penawaran menarik di Furnico',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                ]
+            ),
+          );
         } else {
           final categories = snapshot.data!;
           return SingleChildScrollView(
@@ -57,7 +83,8 @@ class _Homepage extends State<CategoryCarousel> {
                       builder: (BuildContext context) {
                         return buildCategoryCard(
                           context: context,
-                          imageUrl: 'assets/images/image1.jpg', // Gambar default
+                          imageUrl: 'assets/images/image1.jpg',
+                          // Gambar default
                           categoryName: 'All Categories',
                           isAllCategories: true,
                           categoryId: 'All',
@@ -70,7 +97,8 @@ class _Homepage extends State<CategoryCarousel> {
                         builder: (BuildContext context) {
                           return buildCategoryCard(
                             context: context,
-                            imageUrl: category.fields.imageUrl ?? 'assets/images/default.jpg',
+                            imageUrl: category.fields.imageUrl ??
+                                'assets/images/default.jpg',
                             categoryName: category.fields.categoryName,
                             categoryId: category.pk,
                           );
@@ -145,45 +173,54 @@ class _Homepage extends State<CategoryCarousel> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.black,
                       backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                     ),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CategoryPage(categoryId: categoryId, categoryName: categoryName,)),
+                        MaterialPageRoute(builder: (context) =>
+                            CategoryPage(categoryId: categoryId,
+                              categoryName: categoryName,)),
                       );
                     },
                     child: Text(categoryName),
                   )
                 ]
-                else ... [
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      foregroundColor: Colors.black,
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(builder: (context) => const ProductSearchPage()),
-                      );
-                    },
-                    child: Text(categoryName),
-                  )
-                ],
+                else
+                  ... [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProductSearchPage()),
+                        );
+                      },
+                      child: Text(categoryName),
+                    )
+                  ],
                 const SizedBox(height: 10),
                 if (!isAllCategories) ...[
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                     ),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => CategoryPage(categoryId: categoryId, categoryName: categoryName,)),
+                        MaterialPageRoute(builder: (context) =>
+                            CategoryPage(categoryId: categoryId,
+                              categoryName: categoryName,)),
                       );
                     },
                     child: const Text('Edit Kategori'),
@@ -193,10 +230,11 @@ class _Homepage extends State<CategoryCarousel> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                     ),
                     onPressed: () {
-                      _showDeleteConfirmationDialog(context);
+                      _showDeleteConfirmationDialog(context, categoryId);
                     },
                     child: const Text('Hapus Kategori'),
                   ),
@@ -209,7 +247,7 @@ class _Homepage extends State<CategoryCarousel> {
     );
   }
 
-  void _showDeleteConfirmationDialog(BuildContext context) {
+  void _showDeleteConfirmationDialog(BuildContext context, String categoryId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -218,6 +256,7 @@ class _Homepage extends State<CategoryCarousel> {
           content: const Text('Apakah anda yakin?'),
           actions: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -229,15 +268,39 @@ class _Homepage extends State<CategoryCarousel> {
                   },
                   child: const Text('Batal'),
                 ),
-                const SizedBox(height: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
-                    _deleteCategoryFromServer();
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+                    final response = await _request.postJson(
+                      "http://127.0.0.1:8000/delete_category_flutter/",
+                      jsonEncode(<String, String>{
+                        'category_id': categoryId,
+                      }),
+                    );
+                    if (context.mounted) {
+                      Navigator.of(context).pop(); // Close the dialog
+                      if (response['status'] == 'success') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Kategori berhasil dihapus!"),
+                          ),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyHomePage()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Terdapat kesalahan, silakan coba lagi."),
+                          ),
+                        );
+                      }
+                    }
                   },
                   child: const Text('Hapus'),
                 ),
@@ -247,9 +310,5 @@ class _Homepage extends State<CategoryCarousel> {
         );
       },
     );
-  }
-
-  void _deleteCategoryFromServer() {
-    print('Kategori dihapus dari server.');
   }
 }

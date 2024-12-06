@@ -86,6 +86,7 @@ class MyHomePage extends StatelessWidget {
                   ),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: CategoryCarousel(),
@@ -148,6 +149,22 @@ class MyHomePage extends StatelessWidget {
                         );
                       },
                       child: const Text('Tambah Kategori Baru'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black45,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ProductSearchPage()),
+                        );
+                      },
+                      child: const Text('Lihat semua produk'),
                     ),
                   ]
                 )

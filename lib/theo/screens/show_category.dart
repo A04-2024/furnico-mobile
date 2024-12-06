@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:furnico/main.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:furnico/theo/screens/show_product_individual.dart';
-import 'package:furnico/theo/screens/show_productall.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
