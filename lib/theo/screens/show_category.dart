@@ -2,7 +2,9 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:furnico/main.dart';
 import 'package:furnico/theo/screens/dummy.dart';
+import 'package:furnico/theo/screens/homepage.dart';
 import 'package:furnico/theo/screens/show_product_individual.dart';
+import 'package:furnico/theo/screens/show_productall.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -368,8 +370,8 @@ class _CategoryPageState extends State<CategoryPage> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildFooterIcon(context, Icons.home, 'Home', DummyPage()),
-            _buildFooterIcon(context, Icons.search, 'Search', DummyPage()),
+            _buildFooterIcon(context, Icons.home, 'Home', MyHomePage()),
+            _buildFooterIcon(context, Icons.search, 'Search', ShowProductAll()),
             _buildFooterIcon(context, Icons.favorite, 'Wishlist', DummyPage()),
             _buildFooterIcon(context, Icons.article, 'Article', DummyPage()),
             _buildFooterIcon(context, Icons.person, 'Profile', DummyPage()),

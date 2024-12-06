@@ -7,6 +7,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../models/category.dart';
+import '../screens/edit_category.dart';
 import '../screens/homepage.dart';
 import '../screens/show_productall.dart';
 
@@ -218,8 +219,7 @@ class _Homepage extends State<CategoryCarousel> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(builder: (context) =>
-                            CategoryPage(categoryId: categoryId,
-                              categoryName: categoryName,)),
+                            CategoryEditFormPage(id: categoryId)),
                       );
                     },
                     child: const Text('Edit Kategori'),

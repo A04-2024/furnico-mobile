@@ -66,6 +66,7 @@ class _CategoryEntryFormPageState extends State<CategoryEntryFormPage> {
                     decoration: InputDecoration(
                       hintText: "Nama Kategori",
                       labelText: "Nama Kategori",
+                      icon: Icon(Icons.abc),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
@@ -95,6 +96,7 @@ class _CategoryEntryFormPageState extends State<CategoryEntryFormPage> {
                     decoration: InputDecoration(
                       hintText: "Tautan Gambar Kategori",
                       labelText: "Tautan Gambar Kategori",
+                      icon: Icon(Icons.image),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(10.0),
                       ),
