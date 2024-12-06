@@ -1,8 +1,12 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:furnico/theo/models/product_entry.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:provider/provider.dart';
+
+import 'homepage.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String id;
@@ -14,6 +18,7 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  late CookieRequest _request = CookieRequest();
   bool isFavorite = false;
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json/${widget.id}/');
@@ -167,6 +172,45 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 ],
               ),
             ),
+            const SizedBox(height: 10),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.blue,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 20),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) =>
+                        DummyPage()),
+                  );
+                },
+                child: const Text('Edit Produk'),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  foregroundColor: Colors.white,
+                  backgroundColor: Colors.red,
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10, horizontal: 20),
+                ),
+                onPressed: () {
+                  _showDeleteConfirmationDialog(context, snapshot.data![0].pk);
+                },
+                child: const Text('Hapus Produk'),
+              ),
+                ],
+              ),
+      ),
 
             // Garis pembatas
             const Divider(height: 24, thickness: 1),
@@ -312,4 +356,69 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
 
     );
   }
+  void _showDeleteConfirmationDialog(BuildContext context, String productId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Konfirmasi Penghapusan'),
+          content: const Text('Apakah anda yakin?'),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.grey,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Batal'),
+                ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.red,
+                    foregroundColor: Colors.white,
+                  ),
+                  onPressed: () async {
+                    final response = await _request.postJson(
+                      "http://127.0.0.1:8000/delete_product_flutter/",
+                      jsonEncode(<String, String>{
+                        'product_id': productId,
+                      }),
+                    );
+                    if (context.mounted) {
+                      Navigator.of(context).pop(); // Close the dialog
+                      if (response['status'] == 'success') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Produk berhasil dihapus!"),
+                          ),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyHomePage()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Terdapat kesalahan, silakan coba lagi."),
+                          ),
+                        );
+                      }
+                    }
+                  },
+                  child: const Text('Hapus'),
+                ),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
