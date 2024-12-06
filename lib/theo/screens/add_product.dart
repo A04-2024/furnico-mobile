@@ -98,7 +98,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                 ),
               ),
               const Padding(
-                padding: EdgeInsets.only(top:8.0, left:16.0, right:16.0, bottom: 16.0),
+                padding: EdgeInsets.only(top:8.0, left:16.0, right:16.0, bottom: 0.0),
                 child: Text(
                   'Harap isi semua kolom.',
                   style: TextStyle(
@@ -106,6 +106,8 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   ),
                 ),
               ),
+              const SizedBox(height: 16),
+              Divider(color: Colors.grey[400]),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: TextFormField(
@@ -113,8 +115,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Nama Produk",
                     labelText: "Nama Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -139,8 +143,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Penjelasan singkat produk",
                     labelText: "Subtitel produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -165,8 +171,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Tautan Gambar Produk",
                     labelText: "Tautan Gambar Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -191,8 +199,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Pilih Kategori Produk",
                     labelText: "Kategori Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   value: _product_category.isEmpty ? null : _product_category, // Ensure valid default value
                   onChanged: (String? newValue) {
@@ -221,8 +231,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Harga Produk",
                     labelText: "Harga Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -249,8 +261,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Terjual Minggu Ini",
                     labelText: "Terjual Minggu Ini",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -277,8 +291,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Jumlah Produk Terjual",
                     labelText: "Jumlah Produk Terjual",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -306,8 +322,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Penjelasan detail produk",
                     labelText: "Deskripsi Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   maxLines: 5,
                   minLines: 3,
@@ -330,8 +348,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Penjelasan kelebihan produk",
                     labelText: "Kelebihan Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   maxLines: 5,
                   minLines: 3,
@@ -355,8 +375,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Bahan Produk",
                     labelText: "Bahan Produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -381,8 +403,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Lebar produk",
                     labelText: "Lebar produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -409,8 +433,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Tinggi produk",
                     labelText: "Tinggi produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -437,8 +463,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Panjang produk",
                     labelText: "Panjang produk",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -466,8 +494,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Nama Toko",
                     labelText: "Nama Toko",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -491,8 +521,10 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                     hintText: "Alamat Toko",
                     labelText: "Alamat Toko",
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(5.0),
+                      borderRadius: BorderRadius.circular(10.0),
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   onChanged: (String? value) {
                     setState(() {
@@ -510,15 +542,17 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                   },
                 ),
               ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: ElevatedButton(
-                    style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                        Theme.of(context).colorScheme.primary,
-                      ),
+              const SizedBox(height: 16),
+
+              // Tombol Aksi
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 24.0),
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                     ),
                     onPressed: () async {
                       if (_formKey.currentState!.validate()) {
@@ -544,47 +578,51 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                         );
                         if (context.mounted) {
                           if (response['status'] == 'success') {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text("Produk baru berhasil disimpan!"),
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content: Text("Kategori baru berhasil disimpan!"),
                             ));
                             Navigator.pushReplacement(
                               context,
-                              MaterialPageRoute(builder: (context) => MyHomePage()),
+                              MaterialPageRoute(
+                                  builder: (context) => MyHomePage()),
                             );
                           } else {
-                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                              content: Text("Terdapat kesalahan, silakan coba lagi."),
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content:
+                              Text("Terdapat kesalahan, silakan coba lagi."),
                             ));
                           }
                         }
                       }
                     },
                     child: const Text(
-                      "Save",
-                      style: TextStyle(color: Colors.white),
+                      "Simpan",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
                     ),
                   ),
-
-                ),
-              ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                style: ButtonStyle(
-                  backgroundColor: MaterialStateProperty.all(
-                    Theme.of(context).colorScheme.primary,
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 12.0, horizontal: 24.0),
+                      backgroundColor: Colors.grey[600],
+                    ),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => MyHomePage()),
+                      );
+                    },
+                    child: const Text(
+                      "Kembali",
+                      style: TextStyle(color: Colors.white, fontSize: 16),
+                    ),
                   ),
-                ),
-                onPressed: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(builder: (context) => MyHomePage()),
-                  );
-                },
-                child: const Text(
-                "Back",
-                style: TextStyle(color: Colors.white),
-                )
-              )
+                ],
+              ),
+              const SizedBox(height: 32),
             ],
           ),
         ),

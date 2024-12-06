@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:furnico/theo/screens/show_product_individual.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 
 import '../models/product_entry.dart';
@@ -100,7 +101,17 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
               itemCount: filteredProducts.length,
               itemBuilder: (_, index) {
                 final product = filteredProducts[index];
-                return Card(
+                return InkWell(
+                    onTap: () {
+                  // Navigasi ke DummyPage saat card diklik
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => ProductDetailPage(id: "${product.pk}"),
+                    ),
+                  );
+                },
+                child: Card(
                   child: Padding(
                     padding: const EdgeInsets.all(16.0),
                     child: Column(
@@ -165,6 +176,7 @@ class _ProductSearchPageState extends State<ProductSearchPage> {
                       ],
                     ),
                   ),
+                ),
                 );
               },
             ),

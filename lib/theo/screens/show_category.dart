@@ -9,6 +9,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../models/product_entry.dart';
+import 'add_category.dart';
 import 'add_product.dart';
 
 class CategoryPage extends StatefulWidget {
@@ -22,7 +23,8 @@ class CategoryPage extends StatefulWidget {
 
 class _CategoryPageState extends State<CategoryPage> {
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/json_filtered/${widget.categoryId}/');
+    final response = await request.get(
+        'http://127.0.0.1:8000/json_filtered/${widget.categoryId}/');
 
     // Melakukan decode response menjadi bentuk json
     var data = response;
@@ -49,7 +51,10 @@ class _CategoryPageState extends State<CategoryPage> {
             fontWeight: FontWeight.bold,
           ),
         ),
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .primary,
         iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: FutureBuilder(
@@ -58,117 +63,139 @@ class _CategoryPageState extends State<CategoryPage> {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
-              return Center (
-                child: Text ("Error: ${snapshot.error}"),
+              return Center(
+                child: Text("Error: ${snapshot.error}"),
               );
             } else {
-              if (!snapshot.hasData || snapshot.data.isEmpty) {
-                return Column (
-                  children: [
-                    const Text(
-                      'Belum ada data pada kategori ini pada furnico',
-                      style: TextStyle(fontSize: 20, color: Color(0xff59A5D8)),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                );
-              } else {
-                return SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 20),
-                        Text(
-                          'Jelajahi ${widget.categoryName} unggulan kami',
+              return SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const SizedBox(height: 20),
+                      Text(
+                        'Jelajahi ${widget.categoryName} unggulan kami',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 25.0,
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                        child: Text(
+                          'Temukan beragam ${widget
+                              .categoryName} yang sesuai dengan gaya dan kebutuhan anda',
                           style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 25.0,
+                            fontSize: 16.0,
                           ),
                         ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: Text(
-                            'Temukan beragam ${widget.categoryName} yang sesuai dengan gaya dan kebutuhan anda',
-                            style: TextStyle(
-                              fontSize: 16.0,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16.0),
-                          child: CategoryCarousel(),
-                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.only(top: 16.0),
+                        child: CategoryCarousel(),
+                      ),
 
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Produk Populer',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25.0,
+                                ),
+                              ),
+                              const Text(
+                                'Temukan penawaran menarik untuk melihat yang sedang hits di Furnico',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ]
+                        ),
+                      ),
+
+                      Padding(
+                          padding: EdgeInsets.only(top: 10.0),
+                          child: Column(
+                              children: [
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.black45,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 20),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (
+                                              context) => const ProductEntryFormPage()),
+                                    );
+                                  },
+                                  child: const Text('Tambah Produk Baru'),
+                                ),
+                                ElevatedButton(
+                                  style: ElevatedButton.styleFrom(
+                                    foregroundColor: Colors.white,
+                                    backgroundColor: Colors.black45,
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10, horizontal: 20),
+                                  ),
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (
+                                              context) => const CategoryEntryFormPage()),
+                                    );
+                                  },
+                                  child: const Text('Tambah Kategori Baru'),
+                                ),
+                              ]
+                          )
+                      ),
+
+                      if (!snapshot.hasData || snapshot.data.isEmpty) ... [
                         const Padding(
                           padding: EdgeInsets.only(top: 16.0),
                           child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Text(
-                                  'Produk Populer',
+                                  'Belum ada produk di kategori ini!',
                                   style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 25.0,
+                                    color: Colors.red,
                                   ),
                                 ),
                                 const Text(
-                                  'Temukan penawaran menarik untuk melihat yang sedang hits di Furnico',
+                                  'Temukan penawaran menarik di kategori lainnya untuk melihat yang sedang hits di Furnico',
                                   style: TextStyle(
                                     fontSize: 16.0,
+                                    color: Colors.red,
                                   ),
                                 ),
                               ]
                           ),
                         ),
-
-                        Padding(
-                            padding: EdgeInsets.only(top: 10.0),
-                            child: Column(
-                                children: [
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.black45,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 20),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const ProductEntryFormPage()),
-                                      );
-                                    },
-                                    child: const Text('Tambah Produk Baru'),
-                                  ),
-                                  ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      foregroundColor: Colors.white,
-                                      backgroundColor: Colors.black45,
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 10, horizontal: 20),
-                                    ),
-                                    onPressed: () {
-                                      Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => const DummyPage()),
-                                      );
-                                    },
-                                    child: const Text('Tambah Kategori Baru'),
-                                  ),
-                                ]
-                            )
-                        ),
-
+                      ]
+                      else ... [
                         // ini produk-produk
                         const SizedBox(height: 20),
                         Padding(
-                          padding: const EdgeInsets.only(left: 0, top:10, right: 0, bottom:10),
+                          padding: const EdgeInsets.only(
+                              left: 0, top: 10, right: 0, bottom: 10),
                           child: SizedBox(
-                            height: MediaQuery.of(context).size.height * 0.6, // Adjust height as needed
+                            height: MediaQuery
+                                .of(context)
+                                .size
+                                .height * 0.6, // Adjust height as needed
                             child: GridView.builder(
                               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                 crossAxisCount: 2,
@@ -183,7 +210,10 @@ class _CategoryPageState extends State<CategoryPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => ProductDetailPage(id: "${snapshot.data![index].pk}"),
+                                        builder: (context) =>
+                                            ProductDetailPage(
+                                                id: "${snapshot.data![index]
+                                                    .pk}"),
                                       ),
                                     );
                                   },
@@ -196,23 +226,30 @@ class _CategoryPageState extends State<CategoryPage> {
                                     child: Padding(
                                       padding: const EdgeInsets.all(16.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment
+                                            .start,
                                         children: [
                                           AspectRatio(
                                             aspectRatio: 1,
                                             child: ClipRRect(
-                                              borderRadius: BorderRadius.circular(12.0),
+                                              borderRadius: BorderRadius.circular(
+                                                  12.0),
                                               child: Image.network(
-                                                "${snapshot.data![index].fields.productImage}",
+                                                "${snapshot.data![index].fields
+                                                    .productImage}",
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (context, error, stackTrace) =>
-                                                    Icon(Icons.broken_image, size: 50, color: Colors.grey),
+                                                errorBuilder: (context, error,
+                                                    stackTrace) =>
+                                                    Icon(Icons.broken_image,
+                                                        size: 50,
+                                                        color: Colors.grey),
                                               ),
                                             ),
                                           ),
                                           const SizedBox(height: 8.0),
                                           Text(
-                                            "${snapshot.data![index].fields.productName}",
+                                            "${snapshot.data![index].fields
+                                                .productName}",
                                             style: const TextStyle(
                                               fontWeight: FontWeight.bold,
                                               fontSize: 14.0,
@@ -222,7 +259,8 @@ class _CategoryPageState extends State<CategoryPage> {
                                           ),
                                           const SizedBox(height: 4.0),
                                           Text(
-                                            "Rp ${snapshot.data![index].fields.productPrice}",
+                                            "Rp ${snapshot.data![index].fields
+                                                .productPrice}",
                                             style: const TextStyle(
                                               color: Colors.green,
                                               fontWeight: FontWeight.bold,
@@ -231,23 +269,30 @@ class _CategoryPageState extends State<CategoryPage> {
                                           const SizedBox(height: 4.0),
                                           Row(
                                             children: [
-                                              const Icon(Icons.star, color: Colors.yellow, size: 16.0),
+                                              const Icon(Icons.star,
+                                                  color: Colors.yellow,
+                                                  size: 16.0),
                                               const SizedBox(width: 4.0),
                                               Text(
-                                                "${snapshot.data![index].fields.productRating}",
-                                                style: const TextStyle(fontSize: 12.0),
+                                                "${snapshot.data![index].fields
+                                                    .productRating}",
+                                                style: const TextStyle(
+                                                    fontSize: 12.0),
                                               ),
                                             ],
                                           ),
                                           const SizedBox(height: 4.0),
                                           Row(
                                             children: [
-                                              const Icon(Icons.store, size: 16.0, color: Colors.grey),
+                                              const Icon(Icons.store, size: 16.0,
+                                                  color: Colors.grey),
                                               const SizedBox(width: 4.0),
                                               Expanded(
                                                 child: Text(
-                                                  "${snapshot.data![index].fields.storeName}",
-                                                  style: const TextStyle(fontSize: 12.0),
+                                                  "${snapshot.data![index].fields
+                                                      .storeName}",
+                                                  style: const TextStyle(
+                                                      fontSize: 12.0),
                                                   maxLines: 1,
                                                   overflow: TextOverflow.ellipsis,
                                                 ),
@@ -263,53 +308,54 @@ class _CategoryPageState extends State<CategoryPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20),
-
-                        const Padding(
-                          padding: EdgeInsets.only(top: 16.0),
-                          child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Terbaru di Furnico',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 25.0,
-                                  ),
-                                ),
-                                const Text(
-                                  'Butuh inspirasi? Cek ide-ide ruangan kami yang telah dikurasi di artikel Furnico!',
-                                  style: TextStyle(
-                                    fontSize: 16.0,
-                                  ),
-                                ),
-                              ]
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 10.0),
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              foregroundColor: Colors.white,
-                              backgroundColor: Colors.black45,
-                              padding: const EdgeInsets.symmetric(
-                                  vertical: 10, horizontal: 20),
-                            ),
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => const DummyPage()),
-                              );
-                            },
-                            child: const Text('Kunjungi Artikel Furnico'),
-                          ),
-                        )
                       ],
-                    ),
+
+                      const SizedBox(height: 20),
+
+                      const Padding(
+                        padding: EdgeInsets.only(top: 16.0),
+                        child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text(
+                                'Terbaru di Furnico',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 25.0,
+                                ),
+                              ),
+                              const Text(
+                                'Butuh inspirasi? Cek ide-ide ruangan kami yang telah dikurasi di artikel Furnico!',
+                                style: TextStyle(
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                            ]
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.only(top: 10.0),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            foregroundColor: Colors.white,
+                            backgroundColor: Colors.black45,
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                          ),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => const DummyPage()),
+                            );
+                          },
+                          child: const Text('Kunjungi Artikel Furnico'),
+                        ),
+                      )
+                    ],
                   ),
-                );
-              }
+                ),
+              );
             }
           }
 
@@ -334,7 +380,8 @@ class _CategoryPageState extends State<CategoryPage> {
     );
   }
 
-  Widget _buildFooterIcon(BuildContext context, IconData icon, String label, Widget page) {
+  Widget _buildFooterIcon(BuildContext context, IconData icon, String label,
+      Widget page) {
     return GestureDetector(
       onTap: () {
         // Menavigasi ke halaman lain

@@ -7,6 +7,7 @@ import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../models/category.dart';
+import '../screens/search_product.dart';
 
 class CategoryCarousel extends StatefulWidget {
   const CategoryCarousel({Key? key}) : super(key: key);
@@ -165,7 +166,7 @@ class _Homepage extends State<CategoryCarousel> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const ShowProductAll()),
+                        MaterialPageRoute(builder: (context) => const ProductSearchPage()),
                       );
                     },
                     child: Text(categoryName),

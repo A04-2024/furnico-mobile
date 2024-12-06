@@ -4,6 +4,7 @@ import 'package:furnico/theo/screens/dummy.dart';
 import 'package:furnico/theo/screens/search_product.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
 
+import 'add_category.dart';
 import 'add_product.dart';
 
 class MyHomePage extends StatelessWidget {
@@ -143,7 +144,7 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const DummyPage()),
+                              builder: (context) => const CategoryEntryFormPage()),
                         );
                       },
                       child: const Text('Tambah Kategori Baru'),
@@ -208,7 +209,7 @@ class MyHomePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildFooterIcon(context, Icons.home, 'Home', DummyPage()),
+            _buildFooterIcon(context, Icons.home, 'Home', MyHomePage()),
             _buildFooterIcon(context, Icons.search, 'Search', ProductSearchPage()),
             _buildFooterIcon(context, Icons.favorite, 'Wishlist', DummyPage()),
             _buildFooterIcon(context, Icons.article, 'Article', DummyPage()),
@@ -223,10 +224,17 @@ class MyHomePage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // Menavigasi ke halaman lain
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
+        if (label == "Home") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
