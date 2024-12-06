@@ -20,10 +20,28 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
   late Future<void> _loadDataFuture;
   List<Category> listCategory = [];
   List<ProductEntry> listProduct = [];
+  late String id;
+  late String _product_image = "";
+  late String _product_name = "";
+  late String _product_subtitle = "";
+  late int _product_price = 0;
+  late int _sold_this_week = 0;
+  late int _people_bought = 0;
+  late String _product_description = "";
+  late String _product_advantages = "";
+  late String _product_material = "";
+  late int _product_size_length = 0;
+  late int _product_size_height = 0;
+  late int _product_size_long = 0;
+  late String _product_category = "";
+  late int _product_rating = 0;
+  late String _store_name = "";
+  late String _store_address = "";
 
   @override
   void initState() {
     super.initState();
+    id = widget.id;
     _request = CookieRequest();
     _loadDataFuture = _loadObjects();
   }
@@ -74,25 +92,25 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
     } catch (error) {
       debugPrint("Error loading products: $error");
     }
+
+    _product_image = "${listProduct[0].fields.productImage}";
+    _product_name = "${listProduct[0].fields.productName}";
+    _product_subtitle = "${listProduct[0].fields.productSubtitle}";
+    _product_price = int.parse("${listProduct[0].fields.productPrice}");
+    _sold_this_week = int.parse("${listProduct[0].fields.soldThisWeek}");
+    _people_bought = int.parse("${listProduct[0].fields.peopleBought}");
+    _product_description = "${listProduct[0].fields.productDescription}";
+    _product_advantages = "${listProduct[0].fields.productAdvantages}";
+    _product_material = "${listProduct[0].fields.productMaterial}";
+    _product_size_length = int.parse("${listProduct[0].fields.productSizeLength}");
+    _product_size_height = int.parse("${listProduct[0].fields.productSizeHeight}");
+    _product_size_long = int.parse("${listProduct[0].fields.productSizeLong}");
+    _product_category = "${listProduct[0].fields.productCategory}";
+    _store_name = "${listProduct[0].fields.storeName}";
+    _store_address = "${listProduct[0].fields.storeAddress}";
   }
 
   final _formKey = GlobalKey<FormState>();
-  String _product_image = "";
-  String _product_name = "";
-  String _product_subtitle = "";
-  int _product_price = 0;
-  int _sold_this_week = 0;
-  int _people_bought = 0;
-  String _product_description = "";
-  String _product_advantages = "";
-  String _product_material = "";
-  int _product_size_length = 0;
-  int _product_size_height = 0;
-  int _product_size_long = 0;
-  String _product_category = "";
-  int _product_rating = 0;
-  String _store_name = "";
-  String _store_address = "";
 
   Widget build(BuildContext context) {
     return Scaffold(
@@ -638,8 +656,9 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
                             onPressed: () async {
                               if (_formKey.currentState!.validate()) {
                                 final response = await _request.postJson(
-                                  "http://127.0.0.1:8000/create_product_flutter/",
+                                  "http://127.0.0.1:8000/edit_product_flutter/",
                                   jsonEncode(<String, String>{
+                                    'product_id': id,
                                     'product_image': _product_image,
                                     'product_name': _product_name,
                                     'product_subtitle': _product_subtitle,
@@ -666,7 +685,7 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
                                     ScaffoldMessenger.of(context)
                                         .showSnackBar(const SnackBar(
                                       content: Text(
-                                          "Kategori baru berhasil disimpan!"),
+                                          "Produk berhasil diedit!"),
                                     ));
                                     Navigator.pushReplacement(
                                       context,

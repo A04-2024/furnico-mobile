@@ -595,7 +595,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                           if (response['status'] == 'success') {
                             ScaffoldMessenger.of(context)
                                 .showSnackBar(const SnackBar(
-                              content: Text("Kategori baru berhasil disimpan!"),
+                              content: Text("Produk baru berhasil disimpan!"),
                             ));
                             Navigator.pushReplacement(
                               context,
