@@ -1,8 +1,6 @@
-// article_detail.dart
 import 'package:flutter/material.dart';
-import 'package:furnico/joshuaArticle/models/article_detail.dart';
-import 'package:flutter_html/flutter_html.dart';
-
+import 'package:html/parser.dart' show parse;
+import 'package:furnico/joshuaArticle/models/article_models.dart';
 
 class ArticleDetailPage extends StatelessWidget {
   final ArticleEntry article;
@@ -12,7 +10,10 @@ class ArticleDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final imageUrl = 'http://127.0.0.1:8000/media/${article.image}';
-    
+
+    // Parse the HTML content to plain text
+    String plainTextContent = parse(article.content).documentElement?.text ?? '';
+
     return Scaffold(
       appBar: AppBar(
         title: Text(article.title),
@@ -36,7 +37,8 @@ class ArticleDetailPage extends StatelessWidget {
             const SizedBox(height: 16),
             Text(
               article.title,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: const TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Text(
@@ -50,9 +52,8 @@ class ArticleDetailPage extends StatelessWidget {
                 style: TextStyle(fontSize: 12, color: Colors.grey[500]),
               ),
             const SizedBox(height: 16),
-            // Konten artikelnya
             Text(
-              article.content,
+              plainTextContent,
               style: const TextStyle(fontSize: 16, height: 1.4),
             ),
           ],

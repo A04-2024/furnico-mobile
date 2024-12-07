@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:furnico/joshuaArticle/models/article_detail.dart';
+import 'package:furnico/joshuaArticle/models/article_models.dart';
 import 'package:furnico/joshuaArticle/screens/article_detail_screen.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
+import 'package:html/parser.dart' as html_parser; // For parsing HTML to plain text
 
 class ArticleListPage extends StatefulWidget {
   const ArticleListPage({super.key});
@@ -15,7 +16,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
   late Future<List<ArticleEntry>> _articleFuture;
 
   Future<List<ArticleEntry>> fetchArticle(CookieRequest request) async {
-    final response = await request.get('http://127.0.0.1:8000/article/json-article/');
+    final response =
+        await request.get('http://127.0.0.1:8000/article/json-article/');
     List<ArticleEntry> listItem = [];
 
     for (var d in response) {
@@ -90,15 +92,17 @@ class _ArticleListPageState extends State<ArticleListPage> {
                 itemCount: articles.length,
                 itemBuilder: (_, index) {
                   final article = articles[index];
-                  final imageUrl = 'http://127.0.0.1:8000/media/${article.image}';
+                  final imageUrl =
+                      'http://127.0.0.1:8000/media/${article.image}';
 
                   return GestureDetector(
                     onTap: () {
-                      // Arahkan ke halaman detail ketimbang menampilkan dialog
+                      // Navigate to the detail page with full HTML rendering
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ArticleDetailPage(article: article),
+                          builder: (context) =>
+                              ArticleDetailPage(article: article),
                         ),
                       );
                     },
@@ -121,7 +125,8 @@ class _ArticleListPageState extends State<ArticleListPage> {
                         children: [
                           if (article.image.isNotEmpty)
                             ClipRRect(
-                              borderRadius: const BorderRadius.vertical(top: Radius.circular(15.0)),
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(15.0)),
                               child: Image.network(
                                 imageUrl,
                                 height: 180,
@@ -145,18 +150,22 @@ class _ArticleListPageState extends State<ArticleListPage> {
                                 const SizedBox(height: 8),
                                 Text(
                                   "By: ${article.authorUsername}",
-                                  style: TextStyle(fontSize: 14, color: Colors.grey[600]),
+                                  style: TextStyle(
+                                      fontSize: 14, color: Colors.grey[600]),
                                 ),
                                 const SizedBox(height: 8),
                                 if (article.createdAt != null)
                                   Text(
                                     "Created at: ${article.createdAt}",
-                                    style: TextStyle(fontSize: 12, color: Colors.grey[500]),
+                                    style: TextStyle(
+                                        fontSize: 12, color: Colors.grey[500]),
                                   ),
                                 const SizedBox(height: 10),
+                                // Show truncated plain text preview
                                 Text(
-                                  _truncateContent(article.content),
-                                  style: const TextStyle(fontSize: 14, height: 1.4),
+                                  _truncateHtmlContent(article.content),
+                                  style:
+                                      const TextStyle(fontSize: 14, height: 1.4),
                                 ),
                               ],
                             ),
@@ -171,25 +180,21 @@ class _ArticleListPageState extends State<ArticleListPage> {
           },
         ),
       ),
-      // Jika ingin tombol floatingActionButton untuk admin, aktifkan bila perlu:
-      // floatingActionButton: request.isAdmin 
-      //   ? FloatingActionButton(
-      //       onPressed: () {
-      //         // Navigate to add new article page
-      //       },
-      //       backgroundColor: Colors.yellow[700],
-      //       child: const Icon(Icons.add, color: Colors.white),
-      //     )
-      //   : null,
     );
   }
 
-  String _truncateContent(String content, {int wordLimit = 20}) {
-    List<String> words = content.split(' ');
+  // Convert HTML to plain text and then truncate
+  String _truncateHtmlContent(String html, {int wordLimit = 20}) {
+    // Parse the HTML
+    final document = html_parser.parse(html);
+    final String parsedText = document.body?.text ?? '';
+
+    // Truncate words
+    List<String> words = parsedText.split(' ');
     if (words.length > wordLimit) {
       words = words.sublist(0, wordLimit);
       return words.join(' ') + '...';
     }
-    return content;
+    return parsedText;
   }
 }
