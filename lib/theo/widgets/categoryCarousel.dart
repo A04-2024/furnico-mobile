@@ -1,12 +1,15 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:carousel_slider/carousel_slider.dart';
-import 'package:furnico/theo/screens/dummy.dart';
-import 'package:furnico/theo/screens/show_productall.dart';
-import 'package:furnico/theo/models/product_entry.dart';
+import 'package:furnico/theo/screens/show_category.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 import '../models/category.dart';
+import '../screens/edit_category.dart';
+import '../screens/homepage.dart';
+import '../screens/show_productall.dart';
 
 class CategoryCarousel extends StatefulWidget {
   const CategoryCarousel({Key? key}) : super(key: key);
@@ -16,21 +19,7 @@ class CategoryCarousel extends StatefulWidget {
 }
 
 class _Homepage extends State<CategoryCarousel> {
-  // Dummy data kategori, bisa diganti dengan data dari server Django
-  final List<Map<String, String>> categories = [
-  {
-  'image': 'assets/images/image1.jpg', // Ganti dengan URL gambar dari server Django
-  'name': 'Kategori 1',
-  },
-  {
-  'image': 'assets/images/image2.jpg', // Ganti dengan URL gambar dari server Django
-  'name': 'Kategori 2',
-  },
-  {
-  'image': 'assets/images/image3.jpg', // Ganti dengan URL gambar dari server Django
-  'name': 'Kategori 3',
-  },
-  ];
+  late CookieRequest _request = CookieRequest();
 
   Future<List<Category>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json_cat/');
@@ -38,7 +27,7 @@ class _Homepage extends State<CategoryCarousel> {
     // Melakukan decode response menjadi bentuk json
     var data = response;
 
-    // Melakukan konversi data json menjadi object ProductEntry
+    // Melakukan konversi data json menjadi object Category
     List<Category> listCategory = [];
     for (var d in data) {
       if (d != null) {
@@ -51,46 +40,86 @@ class _Homepage extends State<CategoryCarousel> {
   @override
   Widget build(BuildContext context) {
     final request = context.watch<CookieRequest>();
-    return SingleChildScrollView(
-      child: Column(
-        children: [
-          CarouselSlider(
-            items: [
-              // Card pertama untuk "All Categories"
-              Builder(
-                builder: (BuildContext context) {
-                  return buildCategoryCard(
-                    context: context,
-                    imageUrl: 'assets/images/image1.jpg', // Gambar default
-                    categoryName: 'All Categories',
-                    isAllCategories: true,
-                  );
-                },
-              ),
-              // Card lainnya untuk setiap kategori
-              ...categories.map((category) {
-                return Builder(
-                  builder: (BuildContext context) {
-                    return buildCategoryCard(
-                      context: context,
-                      imageUrl: category['image']!,
-                      categoryName: category['name']!,
-                    );
-                  },
-                );
-              }).toList(),
-            ],
-            options: CarouselOptions(
-              height: 350.0,
-              autoPlay: false,
-              enlargeCenterPage: true,
-              aspectRatio: 3 / 5,
-              viewportFraction: 0.8,
-              enableInfiniteScroll: false, // Tidak memungkinkan geser ke kiri dari awal
+    return FutureBuilder<List<Category>>(
+      future: fetchProduct(request),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text('Error: ${snapshot.error}'));
+        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return const Padding(
+            padding: EdgeInsets.only(top: 16.0),
+            child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Belum ada produk di Furnico!',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 25.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                  const Text(
+                    'Tunggu penawaran menarik di Furnico',
+                    style: TextStyle(
+                      fontSize: 16.0,
+                      color: Colors.red,
+                    ),
+                  ),
+                ]
             ),
-          ),
-        ],
-      ),
+          );
+        } else {
+          final categories = snapshot.data!;
+          return SingleChildScrollView(
+            child: Column(
+              children: [
+                CarouselSlider(
+                  items: [
+                    // Card pertama untuk "All Categories"
+                    Builder(
+                      builder: (BuildContext context) {
+                        return buildCategoryCard(
+                          context: context,
+                          imageUrl: 'assets/images/image1.jpg',
+                          // Gambar default
+                          categoryName: 'All Categories',
+                          isAllCategories: true,
+                          categoryId: 'All',
+                        );
+                      },
+                    ),
+                    // Card lainnya untuk setiap kategori
+                    ...categories.map((category) {
+                      return Builder(
+                        builder: (BuildContext context) {
+                          return buildCategoryCard(
+                            context: context,
+                            imageUrl: category.fields.imageUrl ??
+                                'assets/images/default.jpg',
+                            categoryName: category.fields.categoryName,
+                            categoryId: category.pk,
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ],
+                  options: CarouselOptions(
+                    height: 350.0,
+                    autoPlay: false,
+                    enlargeCenterPage: true,
+                    aspectRatio: 3 / 5,
+                    viewportFraction: 0.8,
+                    enableInfiniteScroll: false,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+      },
     );
   }
 
@@ -98,6 +127,7 @@ class _Homepage extends State<CategoryCarousel> {
     required BuildContext context,
     required String imageUrl,
     required String categoryName,
+    required String categoryId,
     bool isAllCategories = false,
   }) {
     return Container(
@@ -119,7 +149,7 @@ class _Homepage extends State<CategoryCarousel> {
             borderRadius: BorderRadius.circular(15),
             child: Stack(
               children: [
-                Image.asset(
+                Image.network(
                   imageUrl,
                   fit: BoxFit.cover,
                   width: double.infinity,
@@ -138,32 +168,58 @@ class _Homepage extends State<CategoryCarousel> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    foregroundColor: Colors.black,
-                    backgroundColor: Colors.white,
-                    padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
-                  ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const ShowProductAll()),
-                    );
-                  },
-                  child: Text(categoryName),
-                ),
+                if (!isAllCategories) ...[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.black,
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) =>
+                            CategoryPage(categoryId: categoryId,
+                              categoryName: categoryName,)),
+                      );
+                    },
+                    child: Text(categoryName),
+                  )
+                ]
+                else
+                  ... [
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.black,
+                        backgroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ShowProductAll()),
+                        );
+                      },
+                      child: Text(categoryName),
+                    )
+                  ],
                 const SizedBox(height: 10),
                 if (!isAllCategories) ...[
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.blue,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                     ),
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const DummyPage()),
+                        MaterialPageRoute(builder: (context) =>
+                            CategoryEditFormPage(id: categoryId)),
                       );
                     },
                     child: const Text('Edit Kategori'),
@@ -173,10 +229,11 @@ class _Homepage extends State<CategoryCarousel> {
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
                       backgroundColor: Colors.red,
-                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 10, horizontal: 20),
                     ),
                     onPressed: () {
-                      _showDeleteConfirmationDialog(context);
+                      _showDeleteConfirmationDialog(context, categoryId);
                     },
                     child: const Text('Hapus Kategori'),
                   ),
@@ -189,8 +246,7 @@ class _Homepage extends State<CategoryCarousel> {
     );
   }
 
-  // Fungsi untuk menampilkan dialog konfirmasi penghapusan
-  void _showDeleteConfirmationDialog(BuildContext context) {
+  void _showDeleteConfirmationDialog(BuildContext context, String categoryId) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -199,6 +255,7 @@ class _Homepage extends State<CategoryCarousel> {
           content: const Text('Apakah anda yakin?'),
           actions: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
@@ -210,15 +267,39 @@ class _Homepage extends State<CategoryCarousel> {
                   },
                   child: const Text('Batal'),
                 ),
-                const SizedBox(height: 10),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.red,
                     foregroundColor: Colors.white,
                   ),
-                  onPressed: () {
-                    _deleteCategoryFromServer();
-                    Navigator.of(context).pop();
+                  onPressed: () async {
+                    final response = await _request.postJson(
+                      "http://127.0.0.1:8000/delete_category_flutter/",
+                      jsonEncode(<String, String>{
+                        'category_id': categoryId,
+                      }),
+                    );
+                    if (context.mounted) {
+                      Navigator.of(context).pop(); // Close the dialog
+                      if (response['status'] == 'success') {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text("Kategori berhasil dihapus!"),
+                          ),
+                        );
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(builder: (context) => MyHomePage()),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text(
+                                "Terdapat kesalahan, silakan coba lagi."),
+                          ),
+                        );
+                      }
+                    }
                   },
                   child: const Text('Hapus'),
                 ),
@@ -228,10 +309,5 @@ class _Homepage extends State<CategoryCarousel> {
         );
       },
     );
-  }
-
-  // Fungsi untuk menghapus kategori dari server Django
-  void _deleteCategoryFromServer() {
-    print('Kategori dihapus dari server.');
   }
 }

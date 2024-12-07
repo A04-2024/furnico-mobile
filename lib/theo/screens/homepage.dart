@@ -1,7 +1,11 @@
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:furnico/theo/screens/dummy.dart';
+import 'package:furnico/theo/screens/show_productall.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
+
+import 'add_category.dart';
+import 'add_product.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
@@ -82,6 +86,7 @@ class MyHomePage extends StatelessWidget {
                   ),
                 ),
               ),
+
               Padding(
                 padding: const EdgeInsets.only(top: 16.0),
                 child: CategoryCarousel(),
@@ -124,7 +129,7 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const DummyPage()),
+                              builder: (context) => const ProductEntryFormPage()),
                         );
                       },
                       child: const Text('Tambah Produk Baru'),
@@ -140,10 +145,26 @@ class MyHomePage extends StatelessWidget {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const DummyPage()),
+                              builder: (context) => const CategoryEntryFormPage()),
                         );
                       },
                       child: const Text('Tambah Kategori Baru'),
+                    ),
+                    ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        foregroundColor: Colors.white,
+                        backgroundColor: Colors.black45,
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 10, horizontal: 20),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const ShowProductAll()),
+                        );
+                      },
+                      child: const Text('Lihat semua produk'),
                     ),
                   ]
                 )
@@ -205,8 +226,8 @@ class MyHomePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildFooterIcon(context, Icons.home, 'Home', DummyPage()),
-            _buildFooterIcon(context, Icons.search, 'Search', DummyPage()),
+            _buildFooterIcon(context, Icons.home, 'Home', MyHomePage()),
+            _buildFooterIcon(context, Icons.search, 'Search', ShowProductAll()),
             _buildFooterIcon(context, Icons.favorite, 'Wishlist', DummyPage()),
             _buildFooterIcon(context, Icons.article, 'Article', DummyPage()),
             _buildFooterIcon(context, Icons.person, 'Profile', DummyPage()),
@@ -220,10 +241,17 @@ class MyHomePage extends StatelessWidget {
     return GestureDetector(
       onTap: () {
         // Menavigasi ke halaman lain
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => page),
-        );
+        if (label == "Home") {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        } else {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => page),
+          );
+        }
       },
       child: Column(
         mainAxisSize: MainAxisSize.min,
