@@ -1,65 +1,33 @@
 // To parse this JSON data, do
 //
-//     final articleEntry = articleEntryFromJson(jsonString);
+//     final commentEntry = commentEntryFromJson(jsonString);
 
 import 'dart:convert';
 
-List<ArticleEntry> articleEntryFromJson(String str) => List<ArticleEntry>.from(json.decode(str).map((x) => ArticleEntry.fromJson(x)));
+List<CommentEntry> commentEntryFromJson(String str) => List<CommentEntry>.from(json.decode(str).map((x) => CommentEntry.fromJson(x)));
 
-String articleEntryToJson(List<ArticleEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
+String commentEntryToJson(List<CommentEntry> data) => json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
-class ArticleEntry {
-    String model;
-    int pk;
-    Fields fields;
-
-    ArticleEntry({
-        required this.model,
-        required this.pk,
-        required this.fields,
-    });
-
-    factory ArticleEntry.fromJson(Map<String, dynamic> json) => ArticleEntry(
-        model: json["model"],
-        pk: json["pk"],
-        fields: Fields.fromJson(json["fields"]),
-    );
-
-    Map<String, dynamic> toJson() => {
-        "model": model,
-        "pk": pk,
-        "fields": fields.toJson(),
-    };
-}
-
-class Fields {
-    String article;
-    int user;
-    String name;
+class CommentEntry {
     String body;
     DateTime createdAt;
+    String userUsername;
 
-    Fields({
-        required this.article,
-        required this.user,
-        required this.name,
+    CommentEntry({
         required this.body,
         required this.createdAt,
+        required this.userUsername,
     });
 
-    factory Fields.fromJson(Map<String, dynamic> json) => Fields(
-        article: json["article"],
-        user: json["user"],
-        name: json["name"],
+    factory CommentEntry.fromJson(Map<String, dynamic> json) => CommentEntry(
         body: json["body"],
         createdAt: DateTime.parse(json["created_at"]),
+        userUsername: json["user__username"],
     );
 
     Map<String, dynamic> toJson() => {
-        "article": article,
-        "user": user,
-        "name": name,
         "body": body,
         "created_at": createdAt.toIso8601String(),
+        "user__username": userUsername,
     };
 }
