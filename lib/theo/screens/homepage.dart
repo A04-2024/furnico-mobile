@@ -2,6 +2,8 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
+import 'package:furnico/report/data/dummy_data.dart';
+import 'package:furnico/theo/screens/show_product_individual.dart';
 
 class MyHomePage extends StatelessWidget {
   MyHomePage({super.key});
@@ -191,7 +193,30 @@ class MyHomePage extends StatelessWidget {
                   },
                   child: const Text('Kunjungi Artikel Furnico'),
                 ),
+              ),
+
+              Padding(
+                padding: EdgeInsets.only(top: 10.0),
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    foregroundColor: Colors.white,
+                    backgroundColor: Colors.black45,
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 20),
+                  ),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => ProductDetailPage(id: sofa.id.toString()), // masih coba
+                      )
+                    );
+                  },
+                  child: const Text('Kunjungi Artikel Furnico'),
+                ),
               )
+
+
             ],
           ),
         ),

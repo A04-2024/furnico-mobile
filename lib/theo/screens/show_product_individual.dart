@@ -3,6 +3,10 @@ import 'package:furnico/theo/models/product_entry.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:provider/provider.dart';
+import 'package:furnico/report/screens/create_report_form.dart';
+import 'package:furnico/report/models/report.dart';
+import 'package:furnico/report/data/dummy_data.dart';
+import 'package:furnico/report/models/user_dummy.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String id;
@@ -14,6 +18,8 @@ class ProductDetailPage extends StatefulWidget {
 }
 
 class _ProductDetailPageState extends State<ProductDetailPage> {
+  final User currentUser = regularUser; // Atur pengguna saat ini sesuai kebutuhan
+
   bool isFavorite = false;
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json/${widget.id}/');
@@ -291,16 +297,15 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                 style: TextStyle(color: Color(0xffffffff)),
               ),
             ),
+
+            // Tombol "Laporkan Produk"
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.red, // Warna merah
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => DummyPage()),
-                );
+                _showCreateReportModal(context);
               },
               child: Text('Laporkan Produk',
                 style: TextStyle(color: Color(0xffffffff)),
@@ -310,6 +315,35 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
         ),
       ),
 
+    );
+  }
+
+    void _showCreateReportModal(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Dialog(
+          insetPadding: EdgeInsets.all(16.0),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          child: Container(
+            constraints: BoxConstraints(
+              maxHeight: MediaQuery.of(context).size.height * 0.8, // Maksimal 80% tinggi layar
+            ),
+            child: CreateReportForm(
+              user: currentUser,
+              furniture: sofa, // Ganti dengan produk yang relevan
+              onReportCreated: (Report newReport) {
+                // Implementasikan apa yang ingin dilakukan setelah laporan dibuat
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Laporan berhasil dibuat!')),
+                );
+              },
+            ),
+          ),
+        );
+      },
     );
   }
 }
