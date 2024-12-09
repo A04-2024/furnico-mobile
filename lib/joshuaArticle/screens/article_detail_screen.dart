@@ -196,10 +196,26 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
             TextField(
               controller: _reviewController,
               decoration: InputDecoration(
-                border: OutlineInputBorder(),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.grey.shade400), // Border color
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0), // Focused border color
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0), // Enabled border color
+                ),
                 labelText: 'Write your review',
+                labelStyle: TextStyle(color: Colors.grey.shade600), // Label color
+                hintText: 'Share your thoughts...', // Hint text
+                hintStyle: TextStyle(color: Colors.grey.shade400), // Hint text color
+                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Padding inside the TextField
               ),
               maxLines: 3,
+              style: TextStyle(fontSize: 16.0, color: Colors.black), // Text style
             ),
             SizedBox(height: 10),
             ElevatedButton(
