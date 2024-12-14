@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
-import 'dart:convert';
 import 'package:furnico/joshuaArticle/models/article_models.dart';
 import 'package:furnico/joshuaArticle/models/comment_models.dart';
+import 'package:pbp_django_auth/pbp_django_auth.dart';
+import 'package:provider/provider.dart';
 
 class ArticleDetailPage extends StatefulWidget {
   final ArticleEntry article;
@@ -17,6 +18,7 @@ class ArticleDetailPage extends StatefulWidget {
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
   List<CommentEntry> comments = [];
   bool isLoading = true;
+  final TextEditingController _reviewController = TextEditingController();
 
   @override
   void initState() {
@@ -44,9 +46,60 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
+  Future<void> submitReview(CookieRequest request) async {
+    // if (_userRating == 0.0 || _reviewController.text.isEmpty) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Please provide both rating and review.')),
+    //   );
+    //   return;
+    // }
+
+    // Map<String, dynamic> data = {
+    //   'rating': _userRating.toInt(),
+    //   'review': _reviewController.text,
+    // };
+
+    // try {
+    //   final response = await request.postJson(
+    //     'http://127.0.0.1:8000/food/add_food_review_flutter/${widget.food.pk}/',
+    //     jsonEncode(data),
+    //   );
+
+    //   print('Raw Response: $response');
+
+    //   if (response is Map && response['status'] == 'success') {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Review submitted successfully!')),
+    //     );
+    //     _reviewController.clear();
+    //     _userRating = 0.0; // Reset user rating
+    //     setState(() {
+    //       // Optionally, re-fetch reviews to include the newly submitted one
+    //       fetchFoodReviews(request);
+    //     });
+    //   } else if (response is Map && response['status'] == 'error') {
+    //     String errorMessage = response['message'] ?? 'Failed to submit review.';
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Failed to submit review: $errorMessage')),
+    //     );
+    //   } else {
+    //     ScaffoldMessenger.of(context).showSnackBar(
+    //       SnackBar(content: Text('Unexpected response from server.')),
+    //     );
+    //     print('Unexpected Response Format: $response');
+    //   }
+    // } catch (e) {
+    //   ScaffoldMessenger.of(context).showSnackBar(
+    //     SnackBar(content: Text('Error submitting review: $e')),
+    //   );
+    //   print('Exception: $e');
+    // }
+  }
+
   @override
   Widget build(BuildContext context) {
     final imageUrl = 'http://127.0.0.1:8000/media/${widget.article.image}';
+    final request = context.watch<CookieRequest>();
 
     // Parse the HTML content to plain text
     String plainTextContent = parse(widget.article.content).documentElement?.text ?? '';
@@ -138,6 +191,40 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                   );
                 },
               ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _reviewController,
+              decoration: InputDecoration(
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
+                  borderSide: BorderSide(color: Colors.grey.shade400), // Border color
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0), // Focused border color
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0), // Enabled border color
+                ),
+                labelText: 'Write your review',
+                labelStyle: TextStyle(color: Colors.grey.shade600), // Label color
+                hintText: 'Share your thoughts...', // Hint text
+                hintStyle: TextStyle(color: Colors.grey.shade400), // Hint text color
+                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Padding inside the TextField
+              ),
+              maxLines: 3,
+              style: TextStyle(fontSize: 16.0, color: Colors.black), // Text style
+            ),
+            SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                submitReview(request).then((_) {
+                  setState(() {});
+                });
+              },
+              child: Text('Submit Review'),
+            ),
           ],
         ),
       ),
