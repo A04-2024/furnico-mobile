@@ -3,13 +3,13 @@
 import 'package:flutter/material.dart';
 import '../models/report.dart';
 import '../models/user_dummy.dart';
-import '../models/product_dummy.dart';
+import 'package:furnico/theo/models/product_entry.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 class CreateReportForm extends StatefulWidget {
   final User user;
-  final Product furniture;
+  final ProductEntry furniture;
   final Function(Report) onReportCreated;
 
   const CreateReportForm({
@@ -40,7 +40,7 @@ class _CreateReportFormState extends State<CreateReportForm> {
 
     // Ganti [APP_URL_KAMU] dengan URL backend Anda
     final response = await request.post(
-      "http://[APP_URL_KAMU]/report/create_report/${widget.furniture.id}/",
+      "http://127.0.0.1:8000/report/create_report/${widget.furniture.pk}/",
       {
         'reason': _selectedReason!,
         'additional_info': _additionalInfoController.text,
@@ -56,7 +56,7 @@ class _CreateReportFormState extends State<CreateReportForm> {
       final newReport = Report(
         id: response['report_id'], // Pastikan backend mengirim 'report_id'
         user: widget.user.username,
-        furniture: widget.furniture.name,
+        furniture: widget.furniture.fields.productName,
         reason: _selectedReason!,
         additionalInfo: _additionalInfoController.text,
         dateReported: DateTime.now(), // Atau dapatkan dari backend jika dikirim

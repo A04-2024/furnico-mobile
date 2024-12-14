@@ -16,6 +16,26 @@ class ReportListScreen extends StatefulWidget {
 class _ReportListScreenState extends State<ReportListScreen> {
   @override
   Widget build(BuildContext context) {
+    // Pastikan hanya admin yang dapat mengakses layar ini
+    if (widget.currentUser.role != 'adminuser') {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text(
+            'Daftar Laporan',
+            style: TextStyle(
+              color: Colors.white,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          backgroundColor: Theme.of(context).colorScheme.primary,
+          iconTheme: const IconThemeData(color: Colors.white),
+        ),
+        body: Center(
+          child: Text("Anda tidak memiliki izin untuk mengakses halaman ini."),
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: const Text(
