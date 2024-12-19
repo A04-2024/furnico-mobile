@@ -25,7 +25,9 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   @override
   void initState() {
     super.initState();
+    final request = Provider.of<CookieRequest>(context, listen: false);
     fetchComments();
+    final currentUsername = request.jsonData['username'];
   }
 
   Future<void> fetchComments() async {
@@ -92,10 +94,39 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
+
+  // // Delete comment method
+  Future<void> deleteComment(CommentEntry comment) async {
+    final request = Provider.of<CookieRequest>(context, listen: false);
+    final deleteUrl =
+        'http://127.0.0.1:8000/article/delete-comment-flutter/${comment.id}/';
+    
+    try {
+      final response = await request.post(deleteUrl, {});// Use CookieRequest for authenticated DELETE
+      if (response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Comment deleted successfully!')),
+        );
+        await fetchComments(); // Refresh comments after deletion
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Failed to delete comment.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting comment: $e')),
+      );
+    }
+  }
+  
   @override
   Widget build(BuildContext context) {
     final imageUrl = 'http://127.0.0.1:8000/media/${widget.article.image}';
     final request = context.watch<CookieRequest>();
+
+    // Get current username from the provider
+    final currentUsername = request.jsonData['username'];
 
     // Parse the HTML content to plain text
     String plainTextContent = parse(widget.article.content).documentElement?.text ?? '';
@@ -181,6 +212,19 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                             'Posted on: ${comment.createdAt}',
                             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                           ),
+                          const SizedBox(height: 8),
+                          // Show delete button if currentUsername matches comment userUsername
+                          if (currentUsername == comment.userUsername)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () => deleteComment(comment),
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -192,25 +236,26 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               controller: _commentController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.grey.shade400), // Border color
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Colors.blue, width: 2.0), // Focused border color
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0), // Enabled border color
+                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
                 ),
                 labelText: 'Write your comments',
-                labelStyle: TextStyle(color: Colors.grey.shade600), // Label color
-                hintText: 'Share your thoughts...', // Hint text
-                hintStyle: TextStyle(color: Colors.grey.shade400), // Hint text color
-                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Padding inside the TextField
+                labelStyle: TextStyle(color: Colors.grey.shade600),
+                hintText: 'Share your thoughts...',
+                hintStyle: TextStyle(color: Colors.grey.shade400),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
               ),
               maxLines: 3,
-              style: TextStyle(fontSize: 16.0, color: Colors.black), // Text style
+              style: TextStyle(fontSize: 16.0, color: Colors.black),
             ),
             SizedBox(height: 10),
             ElevatedButton(
