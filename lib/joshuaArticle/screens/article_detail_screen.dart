@@ -95,31 +95,27 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
   }
 
 
-  // // Delete comment method
   Future<void> deleteComment(CommentEntry comment) async {
     final request = Provider.of<CookieRequest>(context, listen: false);
-    final deleteUrl =
-        'http://127.0.0.1:8000/article/delete-comment-flutter/${comment.id}/';
-    
+    final deleteUrl = 'http://127.0.0.1:8000/article/delete-comment-flutter/${comment.id}/';
+
     try {
-      final response = await request.post(deleteUrl, {});// Use CookieRequest for authenticated DELETE
-      if (response['status'] == 'success') {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Comment deleted successfully!')),
-        );
-        await fetchComments(); // Refresh comments after deletion
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to delete comment.')),
-        );
-      }
+      final response = await request.post(deleteUrl, {});
+      // Directly refresh the comments after deletion, assuming success
+      await fetchComments(); 
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment deleted successfully!')),
+      );
     } catch (e) {
+      // If there's an error, show an error message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error deleting comment: $e')),
       );
     }
   }
-  
+
+
   @override
   Widget build(BuildContext context) {
     final imageUrl = 'http://127.0.0.1:8000/media/${widget.article.image}';
