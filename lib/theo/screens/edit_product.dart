@@ -716,11 +716,7 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
                               backgroundColor: Colors.grey[600],
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyHomePage()),
-                              );
+                              Navigator.of(context).pop();
                             },
                             child: const Text(
                               "Kembali",

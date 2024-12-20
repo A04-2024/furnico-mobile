@@ -363,7 +363,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Konfirmasi Penghapusan'),
-          content: const Text('Apakah anda yakin?'),
+          content: const Text('Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.'),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,

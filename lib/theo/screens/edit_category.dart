@@ -231,11 +231,7 @@ class _CategoryEditFormPageState extends State<CategoryEditFormPage> {
                               backgroundColor: Colors.grey[600],
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyHomePage()),
-                              );
+                              Navigator.of(context).pop();
                             },
                             child: const Text(
                               "Kembali",

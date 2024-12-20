@@ -252,7 +252,7 @@ class _Homepage extends State<CategoryCarousel> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Konfirmasi Penghapusan'),
-          content: const Text('Apakah anda yakin?'),
+          content: const Text('Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan.'),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
