@@ -1,5 +1,7 @@
 # 🛋️ Furnico 🛋️
 
+[![Build status](https://build.appcenter.ms/v0.1/apps/dc3ccdad-6f5d-4ae3-9bec-60b5335bb1bf/branches/main/badge)](https://appcenter.ms)
+
 ## 🙋🏻‍♂️ Anggota Kelompok A04 🙋🏻‍♀️
 - Mohamad Rafli Hidayat (2306245831)
 - Sarah Saphira Setiawan (2306240093)

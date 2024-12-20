@@ -48,6 +48,7 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
 
   Future<List<Category>> fetchCategory(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json_cat/');
+    // final response = await request.get('http://10.0.2.2:8000/json_cat/');
 
     // Melakukan decode response menjadi bentuk json
     var data = response;
@@ -65,6 +66,7 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response = await request.get(
         'http://127.0.0.1:8000/json/${widget.id}/');
+        // 'http://10.0.2.2:8000/json/${widget.id}/');
 
     // Melakukan decode response menjadi bentuk json
     var data = response;
@@ -657,6 +659,7 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
                               if (_formKey.currentState!.validate()) {
                                 final response = await _request.postJson(
                                   "http://127.0.0.1:8000/edit_product_flutter/",
+                                  // "http://10.0.2.2:8000/edit_product_flutter/",
                                   jsonEncode(<String, String>{
                                     'product_id': id,
                                     'product_image': _product_image,
@@ -716,11 +719,7 @@ class _ProductEditFormPageState extends State<ProductEditFormPage> {
                               backgroundColor: Colors.grey[600],
                             ),
                             onPressed: () {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MyHomePage()),
-                              );
+                              Navigator.of(context).pop();
                             },
                             child: const Text(
                               "Kembali",

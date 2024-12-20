@@ -26,6 +26,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
 
   Future<List<Category>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json_cat/');
+    // final response = await request.get('http://10.0.2.2:8000/json_cat/');
 
     // Melakukan decode response menjadi bentuk json
     var data = response;
@@ -573,6 +574,7 @@ class _ProductEntryFormPageState extends State<ProductEntryFormPage> {
                       if (_formKey.currentState!.validate()) {
                         final response = await _request.postJson(
                           "http://127.0.0.1:8000/create_product_flutter/",
+                          // "http://10.0.2.2:8000/create_product_flutter/",
                           jsonEncode(<String, String>{
                             'product_image': _product_image,
                             'product_name': _product_name,

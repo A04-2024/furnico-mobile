@@ -36,6 +36,7 @@ class _ProductEntryPageState extends State<ShowProductAll> {
 
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json/');
+    // final response = await request.get('http://10.0.2.2:8000/json/');
 
     // Decode response menjadi bentuk JSON
     var data = response;
@@ -68,6 +69,7 @@ class _ProductEntryPageState extends State<ShowProductAll> {
     if (allProducts.isEmpty) return;
 
     final response = await _request.get('http://127.0.0.1:8000/wishlist/wishlist-json/');
+    // final response = await _request.get('http://10.0.2.2:8000/wishlist/wishlist-json/');
 
     if (response != null) {
       CollectionWishlist wishlistData = CollectionWishlist.fromJson(response);
@@ -95,6 +97,7 @@ class _ProductEntryPageState extends State<ShowProductAll> {
 
   Future<void> fetchCollections() async {
     final response = await _request.get('http://127.0.0.1:8000/wishlist/wishlist-json/');
+    // final response = await _request.get('http://10.0.2.2:8000/wishlist/wishlist-json/');
     if (response != null) {
       CollectionWishlist wishlistData = CollectionWishlist.fromJson(response);
       setState(() {
@@ -111,6 +114,7 @@ class _ProductEntryPageState extends State<ShowProductAll> {
   Future<void> _removeFromWishlist(String productId) async {
     final response = await _request.post(
       'http://127.0.0.1:8000/wishlist/remove-wishlist/$productId/',
+      // 'http://10.0.2.2:8000/wishlist/remove-wishlist/$productId/',
       jsonEncode({}),
     );
 
@@ -249,6 +253,7 @@ class _ProductEntryPageState extends State<ShowProductAll> {
   Future<void> _addToCollection(String productId, String collectionId) async {
     final response = await _request.post(
       'http://127.0.0.1:8000/wishlist/add-to-wishlist/$productId/',
+      // 'http://10.0.2.2:8000/wishlist/add-to-wishlist/$productId/',
       jsonEncode({
         'collection_id': collectionId,
       }),
