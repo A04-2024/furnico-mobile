@@ -18,7 +18,7 @@ class _RatingListPageState extends State<RatingListPage> {
   @override
   void initState() {
     super.initState();
-    _ratingsFuture = fetchRatings(widget.productId); // Fetch initial ratings
+    _ratingsFuture = fetchRatings(widget.productId); 
   }
 
   void _refreshRatings() {
@@ -45,7 +45,7 @@ class _RatingListPageState extends State<RatingListPage> {
               );
 
               if (result == true) {
-                _refreshRatings(); // Refresh the list if a new rating is added
+                _refreshRatings();
               }
             },
             child: Text('Add Rating'),

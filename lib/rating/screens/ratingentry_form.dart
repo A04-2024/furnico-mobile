@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';  // To store/get token
+import 'package:shared_preferences/shared_preferences.dart';  
 
 class RatingEntryFormPage extends StatefulWidget {
   final String productId;
@@ -17,17 +17,12 @@ class _RatingEntryFormPageState extends State<RatingEntryFormPage> {
   int _rating = 1;
   String _description = "";
 
-  // CSRF token and user authentication should be handled here
-  String csrfToken = "your_csrf_token_here"; // Replace with actual token
-
   Future<void> submitRating() async {
     if (_formKey.currentState!.validate()) {
-      // Retrieve the token from SharedPreferences or local storage
       final prefs = await SharedPreferences.getInstance();
-      String? token = prefs.getString('auth_token');  // Get the saved token
+      String? token = prefs.getString('auth_token'); 
 
       if (token == null) {
-        // Handle the case where the token is not available (user is not logged in)
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Please login first')),
         );
@@ -38,13 +33,12 @@ class _RatingEntryFormPageState extends State<RatingEntryFormPage> {
         Uri.parse("http://127.0.0.1:8000/rating/product/${widget.productId}/create-flutter/"),
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',  // Include the token in the Authorization header
-          'X-CSRFToken': csrfToken, // Include the CSRF token
+          'Authorization': 'Bearer $token',  
         },
         body: jsonEncode(<String, dynamic>{
           "rating": _rating,
           "description": _description,
-          "is_owner": false,  // You can calculate this if needed
+          "is_owner": false,  
         }),
       );
 

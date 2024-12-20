@@ -36,7 +36,7 @@ Future<bool> addRating(String productId, int rating, String description) async {
       Uri.parse(apiUrl),
       headers: {
         "Content-Type": "application/json",
-        "X-CSRFToken": csrfToken, // Include CSRF token here
+        "X-CSRFToken": csrfToken, 
       },
       body: jsonEncode({
         "id": productId,
