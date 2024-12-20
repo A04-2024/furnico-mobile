@@ -188,7 +188,7 @@ class _EditReportFormPageState extends State<EditReportFormPage> {
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       foregroundColor: Colors.white,
-                      backgroundColor: Colors.red,
+                      backgroundColor: Colors.deepOrange,
                     ),
                     onPressed: _isSubmitting ? null : _submitEditReport,
                     child: _isSubmitting

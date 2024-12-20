@@ -4,6 +4,7 @@ import 'package:furnico/joshuaArticle/screens/article_list.dart';
 import 'package:furnico/theo/screens/dummy.dart';
 import 'package:furnico/theo/screens/show_productall.dart';
 import 'package:furnico/theo/widgets/categoryCarousel.dart';
+import 'package:furnico/wishlist/screens/MyWishlist.dart';
 
 import 'add_category.dart';
 import 'add_product.dart';
@@ -229,7 +230,7 @@ class MyHomePage extends StatelessWidget {
           children: [
             _buildFooterIcon(context, Icons.home, 'Home', MyHomePage()),
             _buildFooterIcon(context, Icons.search, 'Search', ShowProductAll()),
-            _buildFooterIcon(context, Icons.favorite, 'Wishlist', DummyPage()),
+            _buildFooterIcon(context, Icons.favorite, 'Wishlist', const MyWishlist()),
             _buildFooterIcon(context, Icons.article, 'Article', ArticleListPage()),
             _buildFooterIcon(context, Icons.person, 'Profile', DummyPage()),
           ],

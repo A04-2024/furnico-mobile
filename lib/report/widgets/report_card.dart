@@ -85,12 +85,11 @@ class ReportCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                if (currentUser.role == 'adminuser')
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
-                    onPressed: () => _deleteReport(context),
-                    child: const Text('Hapus Laporan'),
-                  ),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                  onPressed: () => _deleteReport(context),
+                  child: const Text('Hapus Laporan'),
+                ),
               ],
             ),
           ],

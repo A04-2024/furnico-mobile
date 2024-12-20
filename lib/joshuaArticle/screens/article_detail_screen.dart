@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' show parse;
 import 'package:http/http.dart' as http;
@@ -18,12 +20,14 @@ class ArticleDetailPage extends StatefulWidget {
 class _ArticleDetailPageState extends State<ArticleDetailPage> {
   List<CommentEntry> comments = [];
   bool isLoading = true;
-  final TextEditingController _reviewController = TextEditingController();
+  final TextEditingController _commentController= TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    final request = Provider.of<CookieRequest>(context, listen: false);
     fetchComments();
+    final currentUsername = request.jsonData['username'];
   }
 
   Future<void> fetchComments() async {
@@ -46,60 +50,79 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
     }
   }
 
-  Future<void> submitReview(CookieRequest request) async {
-    // if (_userRating == 0.0 || _reviewController.text.isEmpty) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Please provide both rating and review.')),
-    //   );
-    //   return;
-    // }
+  // Submit a new comment for the current forum
+  Future<void> submitComment(CookieRequest request) async {
+    if (_commentController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please enter a comment')),
+      );
+      return;
+    }
 
-    // Map<String, dynamic> data = {
-    //   'rating': _userRating.toInt(),
-    //   'review': _reviewController.text,
-    // };
+    Map<String, dynamic> data = {
+      'content': _commentController.text,
+    };
 
-    // try {
-    //   final response = await request.postJson(
-    //     'http://127.0.0.1:8000/food/add_food_review_flutter/${widget.food.pk}/',
-    //     jsonEncode(data),
-    //   );
+    try {
+      final response = await request.postJson(
+        'http://127.0.0.1:8000/article/create-comment-flutter/${widget.article.id}/',
+        jsonEncode(data),
+      );
 
-    //   print('Raw Response: $response');
+      if (response is Map && response['status'] == 'success') {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Comment submitted successfully!')),
+        );
+        _commentController.clear();
 
-    //   if (response is Map && response['status'] == 'success') {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('Review submitted successfully!')),
-    //     );
-    //     _reviewController.clear();
-    //     _userRating = 0.0; // Reset user rating
-    //     setState(() {
-    //       // Optionally, re-fetch reviews to include the newly submitted one
-    //       fetchFoodReviews(request);
-    //     });
-    //   } else if (response is Map && response['status'] == 'error') {
-    //     String errorMessage = response['message'] ?? 'Failed to submit review.';
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('Failed to submit review: $errorMessage')),
-    //     );
-    //   } else {
-    //     ScaffoldMessenger.of(context).showSnackBar(
-    //       SnackBar(content: Text('Unexpected response from server.')),
-    //     );
-    //     print('Unexpected Response Format: $response');
-    //   }
-    // } catch (e) {
-    //   ScaffoldMessenger.of(context).showSnackBar(
-    //     SnackBar(content: Text('Error submitting review: $e')),
-    //   );
-    //   print('Exception: $e');
-    // }
+        // Re-fetch comments to include the new comment
+        await fetchComments();
+      } else if (response is Map && response['status'] == 'error') {
+        String errorMessage = response['message'] ?? 'Failed to submit comment.';
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to submit comment: $errorMessage')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Unexpected response from server.')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error submitting comment: $e')),
+      );
+    }
   }
+
+
+  Future<void> deleteComment(CommentEntry comment) async {
+    final request = Provider.of<CookieRequest>(context, listen: false);
+    final deleteUrl = 'http://127.0.0.1:8000/article/delete-comment-flutter/${comment.id}/';
+
+    try {
+      final response = await request.post(deleteUrl, {});
+      // Directly refresh the comments after deletion, assuming success
+      await fetchComments(); 
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Comment deleted successfully!')),
+      );
+    } catch (e) {
+      // If there's an error, show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting comment: $e')),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
     final imageUrl = 'http://127.0.0.1:8000/media/${widget.article.image}';
     final request = context.watch<CookieRequest>();
+
+    // Get current username from the provider
+    final currentUsername = request.jsonData['username'];
 
     // Parse the HTML content to plain text
     String plainTextContent = parse(widget.article.content).documentElement?.text ?? '';
@@ -185,6 +208,19 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
                             'Posted on: ${comment.createdAt}',
                             style: TextStyle(fontSize: 12, color: Colors.grey[600]),
                           ),
+                          const SizedBox(height: 8),
+                          // Show delete button if currentUsername matches comment userUsername
+                          if (currentUsername == comment.userUsername)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: TextButton(
+                                onPressed: () => deleteComment(comment),
+                                child: const Text(
+                                  'Delete',
+                                  style: TextStyle(color: Colors.red),
+                                ),
+                              ),
+                            ),
                         ],
                       ),
                     ),
@@ -193,37 +229,38 @@ class _ArticleDetailPageState extends State<ArticleDetailPage> {
               ),
             const SizedBox(height: 8),
             TextField(
-              controller: _reviewController,
+              controller: _commentController,
               decoration: InputDecoration(
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12.0), // Rounded corners
-                  borderSide: BorderSide(color: Colors.grey.shade400), // Border color
+                  borderRadius: BorderRadius.circular(12.0),
+                  borderSide: BorderSide(color: Colors.grey.shade400),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Colors.blue, width: 2.0), // Focused border color
+                  borderSide: BorderSide(color: Colors.blue, width: 2.0),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12.0),
-                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0), // Enabled border color
+                  borderSide: BorderSide(color: Colors.grey.shade400, width: 1.0),
                 ),
-                labelText: 'Write your review',
-                labelStyle: TextStyle(color: Colors.grey.shade600), // Label color
-                hintText: 'Share your thoughts...', // Hint text
-                hintStyle: TextStyle(color: Colors.grey.shade400), // Hint text color
-                contentPadding: EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0), // Padding inside the TextField
+                labelText: 'Write your comments',
+                labelStyle: TextStyle(color: Colors.grey.shade600),
+                hintText: 'Share your thoughts...',
+                hintStyle: TextStyle(color: Colors.grey.shade400),
+                contentPadding:
+                    EdgeInsets.symmetric(vertical: 12.0, horizontal: 16.0),
               ),
               maxLines: 3,
-              style: TextStyle(fontSize: 16.0, color: Colors.black), // Text style
+              style: TextStyle(fontSize: 16.0, color: Colors.black),
             ),
             SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                submitReview(request).then((_) {
+                submitComment(request).then((_) {
                   setState(() {});
                 });
               },
-              child: Text('Submit Review'),
+              child: Text('Submit Comment'),
             ),
           ],
         ),
