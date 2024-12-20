@@ -32,6 +32,27 @@ class _ArticleListPageState extends State<ArticleListPage> {
     return listItem;
   }
 
+  Future<void> _deleteArticle(ArticleEntry article) async {
+    final request = Provider.of<CookieRequest>(context, listen: false);
+    final deleteUrl = 'http://127.0.0.1:8000/article/delete-article-flutter/${article.id}/';
+
+    try {
+      final response = await request.post(deleteUrl, {});
+      // Directly refresh the articles after deletion, assuming success
+      _refreshArticles();
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Article deleted successfully!')),
+      );
+    } catch (e) {
+      // If there's an error, show an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error deleting article: $e')),
+      );
+    }
+  }
+
+
   Future<void> checkAdminStatus(String username) async {
     final String apiUrl = "http://127.0.0.1:8000/article/check-admin-status/$username/"; // Update with your actual endpoint
 
@@ -129,8 +150,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                       itemCount: articles.length,
                       itemBuilder: (_, index) {
                         final article = articles[index];
-                        final imageUrl =
-                            'http://127.0.0.1:8000/media/${article.image}';
+                        final imageUrl = 'http://127.0.0.1:8000/media/${article.image}';
 
                         return GestureDetector(
                           onTap: () {
@@ -138,8 +158,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    ArticleDetailPage(article: article),
+                                builder: (context) => ArticleDetailPage(article: article),
                               ),
                             );
                           },
@@ -205,6 +224,15 @@ class _ArticleListPageState extends State<ArticleListPage> {
                                         style: const TextStyle(
                                             fontSize: 14, height: 1.4),
                                       ),
+                                      const SizedBox(height: 10),
+                                      if (_isAdmin) // Show delete button only for admins
+                                        Align(
+                                          alignment: Alignment.centerRight,
+                                          child: IconButton(
+                                            icon: const Icon(Icons.delete, color: Colors.red),
+                                            onPressed: () => _deleteArticle(article),
+                                          ),
+                                        ),
                                     ],
                                   ),
                                 ),
@@ -214,6 +242,7 @@ class _ArticleListPageState extends State<ArticleListPage> {
                         );
                       },
                     );
+
                   }
                 },
               ),
