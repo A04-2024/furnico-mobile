@@ -224,13 +224,16 @@ class _ArticleListPageState extends State<ArticleListPage> {
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
                 onPressed: () {
-                  // Navigate to the Add Article page
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => AddArticlePage(), // Create this page
+                      builder: (context) => const AddArticlePage(),
                     ),
-                  );
+                  ).then((shouldRefresh) {
+                    if (shouldRefresh == true) {
+                      _refreshArticles();
+                    }
+                  });
                 },
                 child: const Text("Add New Article"),
               ),
