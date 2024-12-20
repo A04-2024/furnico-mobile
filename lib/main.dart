@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:furnico/aut/TempLogin.dart';
 import 'package:furnico/theo/screens/homepage.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
           ).copyWith(secondary: Colors.white),
         ),
-        home: const LoginPage(),
+        home: MyHomePage(),
       ),
     );
   }

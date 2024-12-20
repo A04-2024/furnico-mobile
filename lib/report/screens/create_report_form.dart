@@ -22,9 +22,9 @@ class _CreateReportFormPageState extends State<CreateReportFormPage> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedReason;
   String? _additionalInfo;
-  bool _isSubmitting = false; // Menambahkan state untuk loading
+  bool _isSubmitting = false; // State untuk loading
 
-  // Daftar alasan sesuai Django
+  // Daftar alasan
   final List<Map<String, String>> _reasons = [
     {'value': 'Kesalahan info furniture', 'label': 'Kesalahan info furniture'},
     {'value': 'Gambar furniture salah atau kurang jelas', 'label': 'Gambar furniture salah atau kurang jelas'},
@@ -34,18 +34,19 @@ class _CreateReportFormPageState extends State<CreateReportFormPage> {
     {'value': 'Lainnya', 'label': 'Lainnya'},
   ];
 
+  // Fungsi untuk mengubah state ketika user memilih alasan
   Future<void> _submitReport() async {
+    // Validasi form
     if (!_formKey.currentState!.validate() || _selectedReason == null) {
       _showErrorDialog('Silakan pilih alasan dan lengkapi form.');
       return;
     }
-
     _formKey.currentState!.save();
-
     setState(() {
       _isSubmitting = true;
     });
 
+    // Mengirim laporan
     try {
       final response = await http.post(
         Uri.parse("http://127.0.0.1:8000/report/create_report_mobile/"),
@@ -77,6 +78,7 @@ class _CreateReportFormPageState extends State<CreateReportFormPage> {
     }
   }
 
+  // Fungsi untuk menampilkan dialog sukses
   void _showSuccessDialog(String message) {
     showDialog(
       context: context,
@@ -96,6 +98,7 @@ class _CreateReportFormPageState extends State<CreateReportFormPage> {
     );
   }
 
+  // Fungsi untuk menampilkan dialog gagal
   void _showErrorDialog(String message) {
     showDialog(
       context: context,
@@ -139,7 +142,6 @@ class _CreateReportFormPageState extends State<CreateReportFormPage> {
                   },
                 );
               }).toList(),
-
               const SizedBox(height: 16),
 
               // TextFormField untuk informasi tambahan
@@ -153,7 +155,6 @@ class _CreateReportFormPageState extends State<CreateReportFormPage> {
                   _additionalInfo = value;
                 },
               ),
-
               const SizedBox(height: 20),
 
               // Tombol untuk kembali dan kirim laporan

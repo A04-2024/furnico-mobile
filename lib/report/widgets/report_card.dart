@@ -7,18 +7,18 @@ import 'package:furnico/report/models/user_dummy.dart';
 class ReportCard extends StatelessWidget {
   final Report report;
   final User currentUser;
-  final VoidCallback onDelete;
-  final VoidCallback onEdit;
+  final VoidCallback onDelete; // Callback untuk memperbarui daftar
 
   const ReportCard({
     required this.report,
     required this.currentUser,
     required this.onDelete,
-    required this.onEdit,
     super.key,
   });
 
+  // Fungsi untuk menghapus report
   Future<void> _deleteReport(BuildContext context) async {
+    // Menampilkan dialog konfirmasi
     final confirm = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -37,20 +37,23 @@ class ReportCard extends StatelessWidget {
       ),
     );
 
+    // Jika pengguna memilih "Hapus"
     if (confirm == true) {
-      // Mengirim permintaan penghapusan ke backend
       final response = await http.post(
         Uri.parse("http://127.0.0.1:8000/report/delete_report_mobile/"),
+        headers: {'Content-Type': 'application/json'}, // Menambahkan header
         body: jsonEncode({'report_id': report.id}),
       );
 
       if (response.statusCode == 200) {
+        // Jika berhasil, memperbarui daftar report
         final responseBody = jsonDecode(response.body);
         if (responseBody['status'] == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Laporan berhasil dihapus.')),
           );
           onDelete(); // Memanggil callback untuk memperbarui daftar
+        // Jika gagal, menampilkan pesan error
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(responseBody['message'] ?? 'Gagal menghapus laporan.')),
@@ -73,22 +76,31 @@ class ReportCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('ID Laporan: ${report.id}', style: const TextStyle(fontWeight: FontWeight.bold)),
+            // Isi report
+            Text(report.reason, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 20), textAlign: TextAlign.center),
             const SizedBox(height: 8),
-            Text('Alasan: ${report.reason}'),
+            Text('Dilaporkan oleh: ${report.username}', style: const TextStyle(color: Colors.grey)), // Menampilkan username
+            const SizedBox(height: 8),
+            Row(
+              children: [
+                Text('Produk: '),
+                Text(report.furnitureName, style: const TextStyle(fontWeight: FontWeight.bold)),
+            ]),
             const SizedBox(height: 8),
             if (report.additionalInfo != null && report.additionalInfo!.isNotEmpty)
               Text('Informasi Tambahan: ${report.additionalInfo}'),
             const SizedBox(height: 8),
             Text('Tanggal Laporan: ${report.dateReported.toLocal()}'),
             const SizedBox(height: 8),
+            
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
-                ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red, foregroundColor: Colors.white),
+                // Tombol hapus
+                IconButton(
                   onPressed: () => _deleteReport(context),
-                  child: const Text('Hapus Laporan'),
+                  icon: Icon(Icons.delete, color: Colors.red),
+                  tooltip: 'Hapus Laporan',
                 ),
               ],
             ),

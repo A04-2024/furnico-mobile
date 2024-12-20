@@ -1,19 +1,19 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:furnico/rating/screens/ratings_list_screen.dart';
 import 'package:furnico/theo/models/product_entry.dart';
 import 'package:furnico/wishlist/screens/MyWishlist.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 import 'package:furnico/wishlist/model/CollectionWishlist.dart';
-
-import 'edit_product.dart';
-import 'homepage.dart';
-
 import 'package:furnico/report/models/user_dummy.dart'; // USER DUMMY
 import 'package:furnico/report/models/report.dart'; 
 import 'package:furnico/report/screens/list_report_screen.dart';
 import 'package:furnico/report/screens/create_report_form.dart';
 import 'package:furnico/report/screens/edit_report_form.dart';
+
+import 'edit_product.dart';
+import 'homepage.dart';
 
 class ProductDetailPage extends StatefulWidget {
   final String id;
@@ -31,7 +31,9 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   // Nama untuk Button Report
   bool isEdit = false;
   String namaButtonReport = 'Laporkan Produk';
+  Color backgroundColorReport = Colors.red;
 
+  // Fungsi untuk mengambil laporan untuk diedit
   Future<Report?> fetchExistingReport(CookieRequest request) async {
     final response = await request.get(
       'http://127.0.0.1:8000/report/get_reports_mobile/?user_id=${currentUser.id}&furniture_id=${widget.id}',
@@ -560,6 +562,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                         ],
                       ),
                     ),
+
+                    // Rating button
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigate to the Rating Page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RatingListPage(productId: widget.id,)
+                          ),
+                        );
+                      },
+                      child: Text('View Ratings'),
+                    ),
                   ],
                 ),
               );
@@ -592,10 +608,11 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
             // Tombol "Report"
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: currentUser.role == 'regularuser' ? Colors.red : Colors.blue,
+                backgroundColor: currentUser.role == 'regularuser' ? backgroundColorReport : Colors.blue,
                 padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
               ),
               onPressed: () async{
+                // Jika user adalah regularuser dan belum membuat laporan, buka form laporan
                 if (currentUser.role == 'regularuser' && !isEdit) {
                   // Menampilkan modal untuk membuat laporan
                   showModalBottomSheet(
@@ -608,34 +625,40 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                       child: CreateReportFormPage(productId: widget.id, currentUser: currentUser),
                     ),
                   ); 
+                  // Mengubah menjadi tombol "Edit Laporan"
                   setState(() {
                     namaButtonReport = 'Edit Laporan';
                     isEdit = true;
+                    backgroundColorReport = Colors.yellow.shade700;
                   });
+                // Jika user adalah regularuser dan sudah membuat laporan, buka form edit
                 } else if (currentUser.role == 'regularuser' && isEdit) {
-                      // Ambil laporan yang ada sebelum menampilkan form edit
-                      Report? existingReport = await fetchExistingReport(request);
-                      if (existingReport != null) {
-                        showModalBottomSheet(
-                          context: context,
-                          isScrollControlled: true,
-                          builder: (context) => Padding(
-                            padding: EdgeInsets.only(
-                              bottom: MediaQuery.of(context).viewInsets.bottom,
-                            ),
-                            child: EditReportFormPage(
-                              existingReport: existingReport,
-                              currentUser: currentUser,
-                            ),
-                          ),
-                        );
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text("Laporan tidak ditemukan."),
-                          ),
-                        );
-                      }         
+                  // Ambil laporan yang ada sebelum menampilkan form edit
+                  Report? existingReport = await fetchExistingReport(request);
+                  // Menampilkan modal untuk mengedit laporan
+                  if (existingReport != null) {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      builder: (context) => Padding(
+                        padding: EdgeInsets.only(
+                          bottom: MediaQuery.of(context).viewInsets.bottom,
+                        ),
+                        child: EditReportFormPage(
+                          existingReport: existingReport,
+                          currentUser: currentUser,
+                        ),
+                      ),
+                    );
+                  // Jika tidak ada laporan, tampilkan pesan
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text("Laporan tidak ditemukan."),
+                      ),
+                    );
+                  }         
+                // Jika user adalah adminuser, buka halaman daftar laporan
                 } else if (currentUser.role == 'adminuser') {
                   Navigator.push(
                     context,

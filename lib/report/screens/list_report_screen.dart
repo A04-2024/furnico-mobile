@@ -15,7 +15,7 @@ class ReportListScreen extends StatefulWidget {
 }
 
 class _ReportListScreenState extends State<ReportListScreen> {
-  late Future<List<Report>> _futureReports;
+  late Future<List<Report>> _futureReports; // Future untuk daftar report
 
   @override
   void initState() {
@@ -23,6 +23,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
     _futureReports = fetchReports();
   }
 
+  // Fungsi untuk mengambil data report
   Future<List<Report>> fetchReports() async {
     final response = await http.get(
       Uri.parse("http://127.0.0.1:8000/report/get_reports_mobile/"),
@@ -36,6 +37,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
     }
   }
 
+  // Fungsi untuk memperbarui daftar report
   void _refreshReports() {
     setState(() {
       _futureReports = fetchReports();
@@ -51,16 +53,19 @@ class _ReportListScreenState extends State<ReportListScreen> {
         body: FutureBuilder<List<Report>>(
           future: _futureReports,
           builder: (context, snapshot) {
+            // Jika data report belum tersedia
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
+            // Jika ada kesalahan saat mengambil data report
             } else if (snapshot.hasError) {
               return Center(child: Text("Error: ${snapshot.error}"));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
               return const Center(child: Text('Tidak ada laporan.'));
+            // Jika data report tersedia
             } else {
               return RefreshIndicator(
                 onRefresh: () async {
-                  _refreshReports();
+                  _refreshReports(); // Refresh daftar report
                 },
                 child: ListView.builder(
                   itemCount: snapshot.data!.length,
@@ -69,8 +74,7 @@ class _ReportListScreenState extends State<ReportListScreen> {
                     return ReportCard(
                       report: report,
                       currentUser: widget.currentUser,
-                      onDelete: _refreshReports,
-                      onEdit: _refreshReports,
+                      onDelete: _refreshReports, // Refresh daftar report
                     );
                   },
                 ),
