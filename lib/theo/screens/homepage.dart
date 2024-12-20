@@ -214,7 +214,7 @@ class MyHomePage extends StatelessWidget {
                   },
                   child: const Text('Kunjungi Artikel Furnico'),
                 ),
-              )
+              ),
             ],
           ),
         ),
