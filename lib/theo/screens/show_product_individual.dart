@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:furnico/rating/screens/ratings_list_screen.dart';
 import 'package:furnico/theo/models/product_entry.dart';
 import 'package:furnico/wishlist/screens/MyWishlist.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
@@ -531,6 +532,20 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                           const SizedBox(height: 20),
                         ],
                       ),
+                    ),
+
+                    // Rating button
+                    ElevatedButton(
+                      onPressed: () {
+                        // Navigate to the Rating Page
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => RatingListPage(productId: widget.id,)
+                          ),
+                        );
+                      },
+                      child: Text('View Ratings'),
                     ),
                   ],
                 ),
