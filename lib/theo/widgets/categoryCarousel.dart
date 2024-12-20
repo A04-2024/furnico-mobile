@@ -23,6 +23,7 @@ class _Homepage extends State<CategoryCarousel> {
 
   Future<List<Category>> fetchProduct(CookieRequest request) async {
     final response = await request.get('http://127.0.0.1:8000/json_cat/');
+    // final response = await request.get('http://10.0.2.2:8000/json_cat/');
 
     // Melakukan decode response menjadi bentuk json
     var data = response;
@@ -252,7 +253,7 @@ class _Homepage extends State<CategoryCarousel> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Konfirmasi Penghapusan'),
-          content: const Text('Apakah anda yakin?'),
+          content: const Text('Apakah Anda yakin ingin menghapus kategori ini? Tindakan ini tidak dapat dibatalkan.'),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -275,6 +276,7 @@ class _Homepage extends State<CategoryCarousel> {
                   onPressed: () async {
                     final response = await _request.postJson(
                       "http://127.0.0.1:8000/delete_category_flutter/",
+                      // "http://10.0.2.2:8000/delete_category_flutter/",
                       jsonEncode(<String, String>{
                         'category_id': categoryId,
                       }),
