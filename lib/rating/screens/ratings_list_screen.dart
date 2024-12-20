@@ -5,7 +5,7 @@ import 'package:furnico/rating/services/rating_service.dart';
 class RatingListPage extends StatelessWidget {
   final String productId;
 
-  RatingListPage({required this.productId});
+  const RatingListPage({super.key, required this.productId});
 
   @override
   Widget build(BuildContext context) {
