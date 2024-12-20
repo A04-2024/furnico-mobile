@@ -225,13 +225,30 @@ class _ArticleListPageState extends State<ArticleListPage> {
                                             fontSize: 14, height: 1.4),
                                       ),
                                       const SizedBox(height: 10),
-                                      if (_isAdmin) // Show delete button only for admins
-                                        Align(
-                                          alignment: Alignment.centerRight,
-                                          child: IconButton(
-                                            icon: const Icon(Icons.delete, color: Colors.red),
-                                            onPressed: () => _deleteArticle(article),
-                                          ),
+                                      if (_isAdmin) // Show admin actions only for admins
+                                        Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          children: [
+                                            IconButton(
+                                              icon: const Icon(Icons.edit, color: Colors.blue),
+                                              onPressed: () {
+                                                Navigator.push(
+                                                  context,
+                                                  MaterialPageRoute(
+                                                    builder: (context) => AddArticlePage(article: article, isEdit: true),
+                                                  ),
+                                                ).then((shouldRefresh) {
+                                                  if (shouldRefresh == true) {
+                                                    _refreshArticles();
+                                                  }
+                                                });
+                                              },
+                                            ),
+                                            IconButton(
+                                              icon: const Icon(Icons.delete, color: Colors.red),
+                                              onPressed: () => _deleteArticle(article),
+                                            ),
+                                          ],
                                         ),
                                     ],
                                   ),

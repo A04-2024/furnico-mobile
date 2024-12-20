@@ -1,10 +1,15 @@
 import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:furnico/joshuaArticle/models/article_models.dart';
 import 'package:pbp_django_auth/pbp_django_auth.dart';
 import 'package:provider/provider.dart';
 
 class AddArticlePage extends StatefulWidget {
-  const AddArticlePage({Key? key}) : super(key: key);
+  final ArticleEntry? article; // Optional article to edit
+  final bool isEdit;
+
+  const AddArticlePage({Key? key, this.article, this.isEdit = false}) : super(key: key);
 
   @override
   State<AddArticlePage> createState() => _AddArticlePageState();
@@ -15,9 +20,22 @@ class _AddArticlePageState extends State<AddArticlePage> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _contentController = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    if (widget.isEdit && widget.article != null) {
+      // Pre-fill fields with the existing article data if editing
+      _titleController.text = widget.article!.title;
+      _contentController.text = widget.article!.content;
+    }
+  }
+
   Future<void> _submitArticle(CookieRequest request) async {
     if (_formKey.currentState!.validate()) {
-      final url = 'http://127.0.0.1:8000/article/create-article-flutter/';
+      final url = widget.isEdit
+          ? 'http://127.0.0.1:8000/article/edit-article-flutter/${widget.article!.id}/'
+          : 'http://127.0.0.1:8000/article/create-article-flutter/';
+
       final Map<String, dynamic> data = {
         'title': _titleController.text.trim(),
         'content': _contentController.text.trim(),
@@ -28,7 +46,7 @@ class _AddArticlePageState extends State<AddArticlePage> {
 
         if (response['status'] == 'success') {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text(response['message'] ?? 'Article created successfully!')),
+            SnackBar(content: Text(response['message'] ?? 'Article ${widget.isEdit ? "updated" : "created"} successfully!')),
           );
 
           // Clear the form fields
@@ -37,12 +55,12 @@ class _AddArticlePageState extends State<AddArticlePage> {
           Navigator.pop(context, true);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to create article: ${response['message']}')),
+            SnackBar(content: Text('Failed to ${widget.isEdit ? "update" : "create"} article: ${response['message']}')),
           );
         }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating article: $e')),
+          SnackBar(content: Text('Error ${widget.isEdit ? "updating" : "creating"} article: $e')),
         );
       }
     }
@@ -54,7 +72,7 @@ class _AddArticlePageState extends State<AddArticlePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add New Article'),
+        title: Text(widget.isEdit ? 'Edit Article' : 'Add New Article'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -65,7 +83,7 @@ class _AddArticlePageState extends State<AddArticlePage> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 Text(
-                  "Create a New Article",
+                  widget.isEdit ? "Edit Article" : "Create a New Article",
                   style: Theme.of(context).textTheme.titleLarge,
                   textAlign: TextAlign.center,
                 ),
@@ -91,7 +109,7 @@ class _AddArticlePageState extends State<AddArticlePage> {
                 const SizedBox(height: 24),
                 ElevatedButton(
                   onPressed: () => _submitArticle(request),
-                  child: const Text('Submit'),
+                  child: Text(widget.isEdit ? 'Update' : 'Submit'),
                 ),
               ],
             ),
