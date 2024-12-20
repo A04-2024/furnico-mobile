@@ -26,6 +26,7 @@ class _CategoryPageState extends State<CategoryPage> {
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response = await request.get(
         'http://127.0.0.1:8000/json_filtered/${widget.categoryId}/');
+        // 'http://10.0.2.2:8000/json_filtered/${widget.categoryId}/');
 
     // Melakukan decode response menjadi bentuk json
     var data = response;

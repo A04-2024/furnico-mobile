@@ -64,6 +64,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<void> checkWishlistStatus() async {
     final response =
         await _request.get('http://127.0.0.1:8000/wishlist/wishlist-json/');
+        // await _request.get('http://10.0.2.2:8000/wishlist/wishlist-json/');
 
     if (response != null) {
       CollectionWishlist wishlistData = CollectionWishlist.fromJson(response);
@@ -86,6 +87,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<void> fetchCollections() async {
     final response =
         await _request.get('http://127.0.0.1:8000/wishlist/wishlist-json/');
+        // await _request.get('http://10.0.2.2:8000/wishlist/wishlist-json/');
     if (response != null) {
       CollectionWishlist wishlistData = CollectionWishlist.fromJson(response);
       setState(() {
@@ -106,6 +108,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       // Remove from wishlist
       final response = await _request.post(
         'http://127.0.0.1:8000/wishlist/remove-wishlist/${widget.id}/',
+        // 'http://10.0.2.2:8000/wishlist/remove-wishlist/${widget.id}/',
         jsonEncode({}),
       );
 
@@ -228,6 +231,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<void> _addToCollection(String collectionId) async {
     final response = await _request.post(
       'http://127.0.0.1:8000/wishlist/add-to-wishlist/${widget.id}/',
+      // 'http://10.0.2.2:8000/wishlist/add-to-wishlist/${widget.id}/',
       jsonEncode({
         'collection_id': collectionId,
       }),
@@ -267,6 +271,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   Future<List<ProductEntry>> fetchProduct(CookieRequest request) async {
     final response =
         await request.get('http://127.0.0.1:8000/json/${widget.id}/');
+        // await request.get('http://10.0.2.2:8000/json/${widget.id}/');
 
     // Melakukan decode  menjadi bentuk json
     var data = response;
@@ -684,7 +689,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: const Text('Konfirmasi Penghapusan'),
-          content: const Text('Apakah anda yakin?'),
+          content: const Text('Apakah Anda yakin ingin menghapus produk ini? Tindakan ini tidak dapat dibatalkan.'),
           actions: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -707,6 +712,7 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                   onPressed: () async {
                     final response = await _request.postJson(
                       "http://127.0.0.1:8000/delete_product_flutter/",
+                      // "http://10.0.2.2:8000/delete_product_flutter/",
                       jsonEncode(<String, String>{
                         'product_id': productId,
                       }),
