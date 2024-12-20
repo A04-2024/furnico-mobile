@@ -1,165 +1,211 @@
-// lib/report/widgets/edit_report_form.dart
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../models/report.dart';
-// import '../models/user_dummy.dart';
-// import '../models/product_dummy.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:provider/provider.dart';
+import 'package:furnico/report/models/report.dart';
+import 'package:furnico/report/models/user_dummy.dart';
+import 'package:http/http.dart' as http;
 
-class EditReportForm extends StatefulWidget {
-  final Report report;
-  final Function(Report) onReportEdited;
+class EditReportFormPage extends StatefulWidget {
+  final Report existingReport;
+  final User currentUser;
 
-  const EditReportForm({
-    required this.report,
-    required this.onReportEdited,
-    Key? key,
-  }) : super(key: key);
+  const EditReportFormPage({
+    required this.existingReport,
+    required this.currentUser,
+    super.key,
+  });
 
   @override
-  _EditReportFormState createState() => _EditReportFormState();
+  State<EditReportFormPage> createState() => _EditReportFormPageState();
 }
 
-class _EditReportFormState extends State<EditReportForm> {
+class _EditReportFormPageState extends State<EditReportFormPage> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedReason;
-  final TextEditingController _additionalInfoController = TextEditingController();
+  String? _additionalInfo;
   bool _isSubmitting = false;
+
+  // Daftar alasan sesuai Django
+  final List<Map<String, String>> _reasons = [
+    {'value': 'Kesalahan info furniture', 'label': 'Kesalahan info furniture'},
+    {'value': 'Gambar furniture salah atau kurang jelas', 'label': 'Gambar furniture salah atau kurang jelas'},
+    {'value': 'Masalah pada website', 'label': 'Masalah pada website'},
+    {'value': 'Website lambat atau tidak responsif', 'label': 'Website lambat atau tidak responsif'},
+    {'value': 'Tampilan website tidak rapi', 'label': 'Tampilan website tidak rapi'},
+    {'value': 'Lainnya', 'label': 'Lainnya'},
+  ];
 
   @override
   void initState() {
     super.initState();
-    _selectedReason = widget.report.reason;
-    _additionalInfoController.text = widget.report.additionalInfo;
+    _selectedReason = widget.existingReport.reason;
+    _additionalInfo = widget.existingReport.additionalInfo;
   }
 
-  // Future<void> _submitEdit() async {
-  //   if (!_formKey.currentState!.validate()) return;
+  Future<void> _submitEditReport() async {
+    if (!_formKey.currentState!.validate() || _selectedReason == null) {
+      _showErrorDialog('Silakan pilih alasan dan lengkapi form.');
+      return;
+    }
 
-  //   setState(() {
-  //     _isSubmitting = true;
-  //   });
+    _formKey.currentState!.save();
 
-  //   final request = context.read<CookieRequest>();
+    setState(() {
+      _isSubmitting = true;
+    });
 
-  //   // Ganti [APP_URL_KAMU] dengan URL backend Anda
-  //   final response = await request.put(
-  //     "http://[APP_URL_KAMU]/report/update_report/${widget.report.id}/",
-  //     {
-  //       'reason': _selectedReason!,
-  //       'additional_info': _additionalInfoController.text,
-  //     },
-  //   );
+    try {
+      final response = await http.post(
+        Uri.parse("http://127.0.0.1:8000/report/edit_report_mobile/"),
+        headers: {"Content-Type": "application/json"},
+          body: jsonEncode({
+            'report_id': widget.existingReport.id,
+            'user': widget.currentUser.id,
+            'furniture': widget.existingReport.furnitureId,
+            'reason': _selectedReason!,
+            'additional_info': _additionalInfo ?? '',
+          }),
+      );
 
-  //   setState(() {
-  //     _isSubmitting = false;
-  //   });
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        if (responseBody['status'] == 'success') {
+          _showSuccessDialog('Laporan berhasil diperbarui.');
+        } else {
+          _showErrorDialog(responseBody['message'] ?? 'Terjadi kesalahan. Silakan coba lagi.');
+        }
+      } else {
+        _showErrorDialog(
+            'Terjadi kesalahan. Status code: ${response.statusCode}\nResponse: ${response.body}');
+      }
+    } catch (e) {
+      _showErrorDialog('Terjadi kesalahan: $e');
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
+    }
+  }
 
-  //   if (response['success'] == true) {
-  //     // Buat objek Report baru dengan data yang diperbarui
-  //     final updatedReport = Report(
-  //       id: widget.report.id,
-  //       user: widget.report.user,
-  //       furniture: widget.report.furniture,
-  //       reason: _selectedReason!,
-  //       additionalInfo: _additionalInfoController.text,
-  //       dateReported: widget.report.dateReported, // Atau update tanggal jika diperlukan
-  //     );
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sukses'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+              Navigator.pop(context); // Tutup modal
+              // Refresh halaman detail produk jika diperlukan
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
 
-  //     widget.onReportEdited(updatedReport);
-
-  //     Navigator.of(context).pop(); // Tutup dialog
-
-  //     // Tampilkan pesan berhasil
-  //     showDialog(
-  //       context: context,
-  //       builder: (context) => AlertDialog(
-  //         content: const Text('Laporan berhasil diperbarui!'),
-  //         actions: [
-  //           TextButton(
-  //             onPressed: () => Navigator.of(context).pop(),
-  //             child: const Text('Keluar'),
-  //           ),
-  //         ],
-  //       ),
-  //     );
-  //   } else {
-  //     // Tampilkan pesan error
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(content: Text('Gagal memperbarui laporan: ${response['message']}')),
-  //     );
-  //   }
-  // }
-
-  @override
-  void dispose() {
-    _additionalInfoController.dispose();
-    super.dispose();
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Gagal'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( // Membungkus konten dengan scroll
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Mengambil ukuran minimum
-          children: [
-            const Text(
-              'Edit Laporan',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const Divider(),
-            Form(
-              key: _formKey,
-              child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Edit Laporan Produk'),
+      ),
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // RadioListTile untuk setiap opsi alasan
+              ..._reasons.map((reason) {
+                return RadioListTile<String>(
+                  title: Text(reason['label']!),
+                  value: reason['value']!,
+                  groupValue: _selectedReason,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedReason = value;
+                    });
+                  },
+                );
+              }).toList(),
+
+              const SizedBox(height: 16),
+
+              // TextFormField untuk informasi tambahan
+              TextFormField(
+                initialValue: _additionalInfo,
+                decoration: const InputDecoration(
+                  labelText: 'Informasi Tambahan',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                onSaved: (value) {
+                  _additionalInfo = value;
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Tombol untuk kembali dan kirim laporan
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  const Text(
-                    'Pilih Alasan Laporan:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  ...Reason.values.map((reason) {
-                    return RadioListTile<String>(
-                      title: Text(reasonToString(reason)),
-                      value: reason.toString().split('.').last, // Mengambil string dari enum
-                      groupValue: _selectedReason,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _selectedReason = value;
-                        });
-                      },
-                    );
-                  }).toList(),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _additionalInfoController,
-                    decoration: const InputDecoration(
-                      labelText: 'Info Tambahan',
-                      border: OutlineInputBorder(),
+                  // Tombol Kembali
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.grey,
                     ),
-                    maxLines: 4,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Silakan masukkan info tambahan.';
-                      }
-                      return null;
-                    },
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            Navigator.pop(context); // Kembali ke halaman sebelumnya
+                          },
+                    child: const Text('Batal'),
                   ),
-                  const SizedBox(height: 20),
-                  _isSubmitting
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: _selectedReason == null ? null : null, //_submitEdit,
-                          child: const Text('Perbarui'),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 50), // Button full width
-                          ),
-                        ),
+                  // Tombol Update Laporan
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: _isSubmitting ? null : _submitEditReport,
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Update Laporan'),
+                  ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

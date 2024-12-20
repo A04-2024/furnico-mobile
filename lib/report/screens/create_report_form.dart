@@ -1,160 +1,205 @@
-// lib/report/widgets/create_report_form.dart
-
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../models/report.dart';
-import '../models/user_dummy.dart';
-import 'package:furnico/theo/models/product_entry.dart';
-import 'package:pbp_django_auth/pbp_django_auth.dart';
-import 'package:provider/provider.dart';
+import 'package:furnico/report/models/user_dummy.dart';
+import 'package:furnico/theo/screens/show_product_individual.dart';
+import 'package:http/http.dart' as http;
 
-class CreateReportForm extends StatefulWidget {
-  final User user;
-  final ProductEntry furniture;
-  final Function(Report) onReportCreated;
+class CreateReportFormPage extends StatefulWidget {
+  final String productId;
+  final User currentUser;
 
-  const CreateReportForm({
-    required this.user,
-    required this.furniture,
-    required this.onReportCreated,
-    Key? key,
-  }) : super(key: key);
+  const CreateReportFormPage({
+    required this.productId,
+    required this.currentUser,
+    super.key,
+  });
 
   @override
-  _CreateReportFormState createState() => _CreateReportFormState();
+  State<CreateReportFormPage> createState() => _CreateReportFormPageState();
 }
 
-class _CreateReportFormState extends State<CreateReportForm> {
+class _CreateReportFormPageState extends State<CreateReportFormPage> {
   final _formKey = GlobalKey<FormState>();
   String? _selectedReason;
-  final TextEditingController _additionalInfoController = TextEditingController();
-  bool _isSubmitting = false;
+  String? _additionalInfo;
+  bool _isSubmitting = false; // Menambahkan state untuk loading
+
+  // Daftar alasan sesuai Django
+  final List<Map<String, String>> _reasons = [
+    {'value': 'Kesalahan info furniture', 'label': 'Kesalahan info furniture'},
+    {'value': 'Gambar furniture salah atau kurang jelas', 'label': 'Gambar furniture salah atau kurang jelas'},
+    {'value': 'Masalah pada website', 'label': 'Masalah pada website'},
+    {'value': 'Website lambat atau tidak responsif', 'label': 'Website lambat atau tidak responsif'},
+    {'value': 'Tampilan website tidak rapi', 'label': 'Tampilan website tidak rapi'},
+    {'value': 'Lainnya', 'label': 'Lainnya'},
+  ];
 
   Future<void> _submitReport() async {
-    if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate() || _selectedReason == null) {
+      _showErrorDialog('Silakan pilih alasan dan lengkapi form.');
+      return;
+    }
+
+    _formKey.currentState!.save();
 
     setState(() {
       _isSubmitting = true;
     });
 
-    final request = context.read<CookieRequest>();
-
-    // Ganti [APP_URL_KAMU] dengan URL backend Anda
-    final response = await request.post(
-      "http://127.0.0.1:8000/report/create_report/${widget.furniture.pk}/",
-      {
-        'reason': _selectedReason!,
-        'additional_info': _additionalInfoController.text,
-      },
-    );
-
-    setState(() {
-      _isSubmitting = false;
-    });
-
-    if (response['success'] == true) {
-      // Buat objek Report baru
-      final newReport = Report(
-        id: response['report_id'], // Pastikan backend mengirim 'report_id'
-        user: widget.user.username,
-        furniture: widget.furniture.fields.productName,
-        reason: _selectedReason!,
-        additionalInfo: _additionalInfoController.text,
-        dateReported: DateTime.now(), // Atau dapatkan dari backend jika dikirim
+    try {
+      final response = await http.post(
+        Uri.parse("http://127.0.0.1:8000/report/create_report_mobile/"),
+        body: jsonEncode({
+          'user': widget.currentUser.id,
+          'furniture': widget.productId,
+          'reason': _selectedReason!,
+          'additional_info': _additionalInfo ?? '',
+        }),
       );
 
-      widget.onReportCreated(newReport);
-
-      Navigator.of(context).pop(); // Tutup dialog
-
-      // Tampilkan pesan terima kasih
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          content: const Text('Terima Kasih Atas Laporan Anda!'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Keluar'),
-            ),
-          ],
-        ),
-      );
-    } else {
-      // Tampilkan pesan error
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Gagal membuat laporan: ${response['message']}')),
-      );
+      if (response.statusCode == 200) {
+        final responseBody = jsonDecode(response.body);
+        if (responseBody['status'] == 'success') {
+          _showSuccessDialog('Laporan berhasil dikirim.');
+        } else {
+          _showErrorDialog(responseBody['message'] ?? 'Terjadi kesalahan. Silakan coba lagi.');
+        }
+      } else {
+        _showErrorDialog(
+            'Terjadi kesalahan. Status code: ${response.statusCode}\nResponse: ${response.body}');
+      }
+    } catch (e) {
+      _showErrorDialog('Terjadi kesalahan: $e');
+    } finally {
+      setState(() {
+        _isSubmitting = false;
+      });
     }
   }
 
-  @override
-  void dispose() {
-    _additionalInfoController.dispose();
-    super.dispose();
+  void _showSuccessDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Sukses'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+              Navigator.pop(context); // Kembali ke halaman sebelumnya
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Gagal'),
+        content: Text(message),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context); // Tutup dialog
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView( // Membungkus konten dengan scroll
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          mainAxisSize: MainAxisSize.min, // Mengambil ukuran minimum
-          children: [
-            const Text(
-              'Buat Laporan',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const Divider(),
-            Form(
-              key: _formKey,
-              child: Column(
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Laporkan Produk'),
+      ),
+      body: Form(
+        key: _formKey,
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              // Menggunakan RadioListTile untuk setiap opsi alasan
+              ..._reasons.map((reason) {
+                return RadioListTile<String>(
+                  title: Text(reason['label']!),
+                  value: reason['value']!,
+                  groupValue: _selectedReason,
+                  onChanged: (value) {
+                    setState(() {
+                      _selectedReason = value;
+                    });
+                  },
+                );
+              }).toList(),
+
+              const SizedBox(height: 16),
+
+              // TextFormField untuk informasi tambahan
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Informasi Tambahan',
+                  border: OutlineInputBorder(),
+                ),
+                maxLines: 3,
+                onSaved: (value) {
+                  _additionalInfo = value;
+                },
+              ),
+
+              const SizedBox(height: 20),
+
+              // Tombol untuk kembali dan kirim laporan
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  const Text(
-                    'Pilih Alasan Laporan:',
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  ...Reason.values.map((reason) {
-                    return RadioListTile<String>(
-                      title: Text(reasonToString(reason)),
-                      value: reason.toString().split('.').last, // Mengambil string dari enum
-                      groupValue: _selectedReason,
-                      onChanged: (String? value) {
-                        setState(() {
-                          _selectedReason = value;
-                        });
-                      },
-                    );
-                  }).toList(),
-                  const SizedBox(height: 10),
-                  TextFormField(
-                    controller: _additionalInfoController,
-                    decoration: const InputDecoration(
-                      labelText: 'Info Tambahan',
-                      border: OutlineInputBorder(),
+                  // Tombol Kembali
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.grey,
                     ),
-                    maxLines: 4,
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Silakan masukkan info tambahan.';
-                      }
-                      return null;
-                    },
+                    onPressed: _isSubmitting
+                        ? null
+                        : () {
+                            Navigator.pop(context); // Kembali ke halaman sebelumnya
+                            Navigator.pushReplacement( // Refresh halaman sebelumnya
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => ProductDetailPage(id: widget.productId),
+                              ));
+                          },
+                    child: const Text('Kembali'),
                   ),
-                  const SizedBox(height: 20),
-                  _isSubmitting
-                      ? const CircularProgressIndicator()
-                      : ElevatedButton(
-                          onPressed: _selectedReason == null ? null : _submitReport,
-                          child: const Text('Kirim'),
-                          style: ElevatedButton.styleFrom(
-                            minimumSize: const Size(double.infinity, 50), // Button full width
-                          ),
-                        ),
+                  // Tombol Kirim Laporan
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      foregroundColor: Colors.white,
+                      backgroundColor: Colors.red,
+                    ),
+                    onPressed: _isSubmitting ? null : _submitReport,
+                    child: _isSubmitting
+                        ? const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(
+                              color: Colors.white,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : const Text('Kirim Laporan'),
+                  ),
                 ],
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
